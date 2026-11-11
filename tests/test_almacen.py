@@ -163,3 +163,19 @@ def test_word_en_supabase_se_descarga_con_ruta_relativa(bd):
     for ruta_mala in ["data/cv_base.yaml", "salidas/../data/cv_base.yaml", "salidas/cv/no-existe.docx",
                       "C:\\Users\\x\\salidas\\cv\\CV.docx"]:
         assert client.get("/api/archivos", params={"ruta": ruta_mala}).status_code == 404
+
+
+def test_flujos_pausados_en_postgres_solo_con_supabase(monkeypatch):
+    from langgraph.checkpoint.memory import InMemorySaver
+    from app.agents import batuta
+
+    usados = []
+    monkeypatch.setattr(batuta, "_checkpointer_postgres", lambda: usados.append("postgres") or InMemorySaver())
+    monkeypatch.setattr(batuta, "_checkpointer_sqlite", lambda: usados.append("sqlite") or InMemorySaver())
+
+    monkeypatch.setattr(batuta, "_grafo_cv", None)
+    batuta._obtener_grafo_cv()
+    monkeypatch.setattr(batuta, "_grafo_cv", None)
+    monkeypatch.setenv("ALMACEN", "supabase")
+    batuta._obtener_grafo_cv()
+    assert usados == ["sqlite", "postgres"]

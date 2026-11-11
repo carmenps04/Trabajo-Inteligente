@@ -20,6 +20,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 
+from app import almacen
 from app.agents import archivero, balanza, eventos, imprenta, lupa, notario, pluma, pregunton
 from app.agents.estado import CVState, OfertaState
 from app.cv.cargador import RAIZ
@@ -116,12 +117,42 @@ def construir_grafo_cv(checkpointer):
 _grafo_cv = None
 
 
+def _checkpointer_postgres():
+    """
+    Flujos pausados en Supabase (tablas checkpoint* que crea setup()).
+    Un pool pequeño que comprueba la conexión antes de usarla: el pooler
+    de Supabase cierra las conexiones inactivas.
+    """
+    import os
+
+    from langgraph.checkpoint.postgres import PostgresSaver
+    from psycopg.rows import dict_row
+    from psycopg_pool import ConnectionPool
+
+    pool = ConnectionPool(
+        os.environ["SUPABASE_DB_URL"].strip().strip("\"'"),
+        min_size=1, max_size=3, open=True, check=ConnectionPool.check_connection,
+        kwargs={"autocommit": True, "prepare_threshold": None, "row_factory": dict_row},
+    )
+    import atexit
+
+    atexit.register(pool.close)  # cierre limpio al apagar el servidor
+    saver = PostgresSaver(pool)
+    saver.setup()  # idempotente
+    return saver
+
+
+def _checkpointer_sqlite():
+    RUTA_FLUJOS.parent.mkdir(parents=True, exist_ok=True)
+    return SqliteSaver(sqlite3.connect(RUTA_FLUJOS, check_same_thread=False))
+
+
 def _obtener_grafo_cv():
     global _grafo_cv
     if _grafo_cv is None:
-        RUTA_FLUJOS.parent.mkdir(parents=True, exist_ok=True)
-        conexion = sqlite3.connect(RUTA_FLUJOS, check_same_thread=False)
-        _grafo_cv = construir_grafo_cv(SqliteSaver(conexion))
+        # Mismo destino que el resto de datos privados (ver app/almacen.py).
+        checkpointer = _checkpointer_postgres() if almacen.en_supabase() else _checkpointer_sqlite()
+        _grafo_cv = construir_grafo_cv(checkpointer)
     return _grafo_cv
 
 

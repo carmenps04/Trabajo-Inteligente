@@ -9,6 +9,9 @@ python-dotenv
 psycopg2-binary
 langgraph==1.2.16
 langgraph-checkpoint-sqlite==3.1.2
+langgraph-checkpoint-postgres==3.2.0   # flujos pausados en Supabase (Cloud Run)
+psycopg[binary]==3.3.8
+psycopg-pool==3.3.3
 python-docx==1.2.0
 PyYAML==6.0.3
  
