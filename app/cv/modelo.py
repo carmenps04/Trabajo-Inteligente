@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 
 class Contacto(BaseModel):
     nombre: str
-    titular: Optional[str] = None  # línea bajo el nombre, ej. "Practicante de Data Analytics"
+    titular: Optional[str] = None  # línea bajo el nombre, ej. "Analista de datos junior"
     email: str
     telefono: Optional[str] = None
     ubicacion: Optional[str] = None
@@ -33,7 +33,7 @@ class Experiencia(BaseModel):
 
 class Proyecto(BaseModel):
     nombre: str
-    contexto: Optional[str] = None  # ej. "IAthon Construye Perú", "curso X"
+    contexto: Optional[str] = None  # ej. "TFG", "Hackathon X", "curso X"
     fecha: Optional[str] = None
     logros: list[str] = Field(min_length=1)
     stack: list[str] = []
@@ -54,7 +54,7 @@ class Educacion(BaseModel):
     institucion: str
     inicio: Optional[str] = None
     fin: Optional[str] = None
-    detalle: Optional[str] = None  # ej. "8.º ciclo · Quinto superior"
+    detalle: Optional[str] = None  # ej. "Nota media: 8,2 · Matrícula de Honor en TFG"
 
 
 class Logro(BaseModel):

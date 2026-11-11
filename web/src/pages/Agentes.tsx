@@ -152,7 +152,7 @@ export default function Agentes() {
                   <Avatar id={a.agente} tamano="size-8" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-ink"><span className="font-semibold">{AGENTE[a.agente]?.nombre ?? a.agente}</span> · {a.resumen}</p>
-                    <p className="text-xs text-ink-3">{hace(a.fecha)} · {new Date(a.fecha).toLocaleString("es-PE")}</p>
+                    <p className="text-xs text-ink-3">{hace(a.fecha)} · {new Date(a.fecha).toLocaleString("es-ES")}</p>
                   </div>
                   {a.estado !== "ok" && (
                     <Insignia tono={a.estado === "error" ? "bad" : a.estado === "detenido" ? "neutro" : "warn"}>

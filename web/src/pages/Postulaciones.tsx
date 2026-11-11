@@ -141,7 +141,7 @@ function Detalle({ oferta, estados }: { oferta: Oferta; estados: string[] }) {
                   <li key={i} className="mb-3 last:mb-0">
                     <span className="absolute -left-1.5 mt-1.5 size-3 rounded-full border-2 border-surface bg-primary" />
                     <p className="text-sm font-medium text-ink">{h.estado}</p>
-                    <p className="text-xs text-ink-3">{new Date(h.fecha).toLocaleString("es-PE")}{h.nota && ` · ${h.nota}`}</p>
+                    <p className="text-xs text-ink-3">{new Date(h.fecha).toLocaleString("es-ES")}{h.nota && ` · ${h.nota}`}</p>
                   </li>
                 ))}
               </ol>
@@ -159,7 +159,7 @@ function Detalle({ oferta, estados }: { oferta: Oferta; estados: string[] }) {
                 <li key={v.version} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line px-3 py-2.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm font-semibold text-ink">Versión {v.version}</span>
-                    <span className="text-xs text-ink-3">{new Date(v.fecha).toLocaleString("es-PE")}</span>
+                    <span className="text-xs text-ink-3">{new Date(v.fecha).toLocaleString("es-ES")}</span>
                     {v.enviado && <Insignia tono="ok" icono={Send}>Enviado {fechaCorta(v.fecha_envio)}</Insignia>}
                     {!v.usa_texto_de_pluma && <Insignia>Textos originales</Insignia>}
                   </div>

@@ -13,9 +13,13 @@ consultas:
   - business intelligence
   - data engineer
   - analytics
+  - inteligencia artificial
+  - machine learning
 
 # Solo ofertas de estos países (como los escribe la fuente)...
-paises: [Peru]
+# No está verificado cómo escribe Get on Board a España: se ponen las
+# dos formas (la comparación ignora mayúsculas, pero no tildes).
+paises: [Spain, España]
 # ...o 100% remotas.
 incluir_remoto: true
 
@@ -34,6 +38,11 @@ palabras_clave_titulo:
   - sql
   - power bi
   - reporting
+  - ia
+  - ai
+  - inteligencia artificial
+  - machine learning
+  - ml
 
 # Si el título tiene alguna de estas, se descarta (buscas prácticas o
 # puestos junior). Borra las que quieras volver a ver.
@@ -50,6 +59,9 @@ palabras_excluidas_titulo:
   - manager
   - head
   - jefe
+  - responsable
+  - expert
+  - experto
 
 # Tope de ofertas NUEVAS que se analizan con Gemini por corrida. Lupa
 # usa los modelos "lite" (500 peticiones/día cada uno en el plan

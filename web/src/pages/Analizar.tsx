@@ -135,7 +135,7 @@ export default function Analizar() {
             </>
           ) : (
             <Campo etiqueta="URL de la oferta"
-                   ayuda="LinkedIn, Indeed, Computrabajo y Bumeran no se pueden leer por URL: para esos portales pega el texto.">
+                   ayuda="LinkedIn, Indeed e InfoJobs no se pueden leer por URL: para esos portales pega el texto o usa el marcador.">
               <input className={claseCampo} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..." />
             </Campo>
           )}
@@ -159,7 +159,7 @@ export default function Analizar() {
       <Seccion titulo="Envía ofertas desde el navegador con un clic">
         <Tarjeta className="flex flex-col gap-4">
           <p className="text-sm leading-relaxed text-ink-2">
-            Con este marcador, estando en una oferta de LinkedIn, Computrabajo, Bumeran o cualquier portal, un clic la
+            Con este marcador, estando en una oferta de LinkedIn, InfoJobs, Tecnoempleo o cualquier portal, un clic la
             manda aquí con su texto y su link. Tú abres la oferta, así que no hay scraping.
           </p>
           <ol className="list-decimal space-y-1 pl-5 text-sm text-ink">

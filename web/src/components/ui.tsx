@@ -23,7 +23,7 @@ export const formatoScore = (s: number | null | undefined) => (s == null ? "—"
 export function fechaCorta(valor?: string | null) {
   if (!valor) return "";
   const d = new Date(valor);
-  return isNaN(d.getTime()) ? "" : d.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
+  return isNaN(d.getTime()) ? "" : d.toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 // ---------- Encabezado de página ----------

@@ -295,9 +295,16 @@ solicitada de forma ESTRICTA:
 - Si el texto indica que la oferta ya no está disponible, está cerrada
   o cubierta, responde is_offer_available=false y technologies=[].
 
+Sobre english_level:
+- Si la oferta usa niveles del Marco Común Europeo (MCER), tradúcelos
+  así: A1 o A2 -> basico; B1 o B2 -> intermedio; C1 o C2 -> avanzado.
+- "First Certificate"/FCE equivale a B2 y "Advanced"/CAE a C1.
+- "Inglés fluido", "bilingüe" o "nivel alto" -> avanzado.
+- Si no menciona el inglés, 'no_especificado'.
+
 Sobre company_name:
-- Debe ser el nombre PROPIO de la empresa (ej. "Banco Pichincha",
-  "Ferreyros"), tal como aparece escrito en el texto.
+- Debe ser el nombre PROPIO de la empresa (ej. "Indra",
+  "Caja Rural de Granada"), tal como aparece escrito en el texto.
 - Descripciones genéricas y anónimas ("importante empresa del rubro
   retail", "prestigiosa entidad financiera", "empresa líder del
   sector") NO son nombres: en ese caso responde 'no_especificado'.
@@ -306,8 +313,8 @@ Sobre company_name:
 
 Sobre source_name:
 - Responde un portal SOLO si el texto indica que la oferta fue
-  PUBLICADA ahí (ej. "publicado en LinkedIn", "postula vía
-  Computrabajo").
+  PUBLICADA ahí (ej. "publicado en LinkedIn", "inscríbete vía
+  InfoJobs").
 - Que el texto mencione un portal por otro motivo NO cuenta. Por
   ejemplo, "mantener tu perfil de LinkedIn actualizado" es un
   requisito para el candidato, no la fuente de la oferta.

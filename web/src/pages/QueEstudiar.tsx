@@ -38,7 +38,7 @@ export default function QueEstudiar() {
       />
 
       {data.total_ofertas === 0 ? (
-        <Vacio icono={Compass} titulo="Aún no hay ofertas">Analiza algunas o deja que Sabueso las traiga.</Vacio>
+        <Vacio icono={Compass} titulo="Aún no hay ofertas">Analiza algunas desde Analizar oferta.</Vacio>
       ) : (
         <>
           {data.total_ofertas < MUESTRA_MINIMA && (
@@ -85,7 +85,7 @@ export default function QueEstudiar() {
           >
             {data.plan ? (
               <>
-                <p className="mb-1 text-xs text-ink-3">Generado el {new Date(data.plan.generado).toLocaleString("es-PE")}</p>
+                <p className="mb-1 text-xs text-ink-3">Generado el {new Date(data.plan.generado).toLocaleString("es-ES")}</p>
                 <p className="mb-4 text-sm leading-relaxed text-ink-2">{data.plan.plan.resumen}</p>
                 <div className="grid gap-4 md:grid-cols-2">
                   {data.plan.plan.items.map((it) => (

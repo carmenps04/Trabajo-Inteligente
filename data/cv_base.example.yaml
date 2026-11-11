@@ -5,21 +5,21 @@
 
 contacto:
   nombre: Ana Pérez Ejemplo
-  titular: Practicante de Data Analytics  # opcional, va bajo el nombre
+  titular: Analista de datos junior  # opcional, va bajo el nombre
   email: ana.ejemplo@correo.com
-  telefono: "999999999"
-  ubicacion: Lima, Perú
+  telefono: "+34 600 000 000"
+  ubicacion: Granada, España
   linkedin: linkedin.com/in/ana-ejemplo
   github: github.com/ana-ejemplo
 
 perfil: >-
-  Estudiante de Ingeniería de Sistemas con interés en analítica de datos.
+  Graduada en Ingeniería Informática con interés en analítica de datos e IA.
   Experiencia académica en SQL, Python y Power BI.
 
 experiencia:
-  - empresa: Empresa Ejemplo S.A.C.
-    cargo: Practicante de Datos
-    ubicacion: Lima
+  - empresa: Empresa Ejemplo S.L.
+    cargo: Becaria de Datos (prácticas)
+    ubicacion: Granada
     inicio: Enero 2025
     fin: Actualidad
     logros:
@@ -42,18 +42,18 @@ habilidades:
       - {nombre: Power BI}
 
 educacion:
-  - titulo: Ingeniería de Sistemas
+  - titulo: Grado en Ingeniería Informática
     institucion: Universidad Ejemplo
-    inicio: Marzo 2022
+    inicio: Septiembre 2021
     fin: Actualidad
-    detalle: 6.º ciclo · Tercio superior  # opcional
+    detalle: Nota media 7,8 · TFG sobre visualización de datos  # opcional
 
 certificados:
   - {nombre: SQL desde cero, emisor: Plataforma Ejemplo}
 
 idiomas:
   - {idioma: Español, nivel: Nativo}
-  - {idioma: Inglés, nivel: Intermedio}
+  - {idioma: Inglés, nivel: B2}
 
 competencias:
   - Trabajo en equipo

@@ -49,10 +49,10 @@ export default function Bandeja() {
       <Encabezado
         seccion="Ofertas"
         titulo="Bandeja"
-        descripcion="Ofertas que aún no revisas: las que trajo Sabueso de Get on Board y las que analizaste tú. Adapta tu CV a las que te interesen y descarta el resto."
+        descripcion="Ofertas que aún no revisas: las que analizaste tú y, si lo pides, las que trae Sabueso de Get on Board. Adapta tu CV a las que te interesen y descarta el resto."
         acciones={
           <Boton variante="primario" icono={Radar} cargando={buscar.isPending} onClick={() => buscar.mutate()}>
-            {buscar.isPending ? "Buscando..." : "Buscar ofertas nuevas"}
+            {buscar.isPending ? "Buscando..." : "Buscar en Get on Board"}
           </Boton>
         }
       />

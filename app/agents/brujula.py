@@ -181,7 +181,7 @@ class ItemPlan(BaseModel):
     por_que: str = Field(description="Una frase: por qué conviene, citando los datos entregados")
     que_aprender: list[str] = Field(description="3 a 5 temas concretos, de lo básico a lo aplicado")
     proyecto: str = Field(description="Un proyecto pequeño para el portafolio que lo demuestre")
-    semanas: int = Field(description="Semanas estimadas a ritmo de estudiante (5-8 h por semana)")
+    semanas: int = Field(description="Semanas estimadas a ritmo de 5-8 h por semana")
 
 
 class PlanEstudio(BaseModel):
@@ -190,13 +190,14 @@ class PlanEstudio(BaseModel):
 
 
 PROMPT_PLAN = """\
-Eres un mentor de carrera en datos para un estudiante de Ingeniería de
-Sistemas en Perú. Arma un plan de estudio para estas tecnologías, en
+Eres un mentor de carrera en datos para una persona que busca su primer
+empleo (junior o prácticas) en datos, BI o IA en España. Arma un plan de
+estudio para estas tecnologías, en
 este orden de prioridad (ya calculado a partir de ofertas reales):
 
 {prioridades}
 
-Lo que el estudiante YA sabe (úsalo como punto de partida):
+Lo que la persona YA sabe (úsalo como punto de partida):
 {base}
 
 Reglas:
@@ -206,7 +207,7 @@ Reglas:
 - No inventes links ni nombres de cursos específicos. Si recomiendas
   recursos, di el tipo ("documentación oficial", "tutorial oficial").
 - El proyecto debe poder hacerse en local y aprovechar lo que ya sabe.
-- Escribe en español, directo y sin adornos.
+- Escribe en español de España, directo y sin adornos.
 """
 
 

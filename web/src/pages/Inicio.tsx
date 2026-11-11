@@ -22,7 +22,7 @@ export default function Inicio() {
   const promedio = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
   const nuevas = data.resumen.nuevas.length;
 
-  const hoy = new Date().toLocaleDateString("es-PE", { weekday: "long", day: "numeric", month: "long" });
+  const hoy = new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" });
 
   return (
     <div className="aparecer">
@@ -87,7 +87,7 @@ export default function Inicio() {
         )}
       >
         {bandeja.length === 0 ? (
-          <Vacio icono={Inbox} titulo="Tu bandeja está vacía">Analiza una oferta o deja que Sabueso traiga nuevas.</Vacio>
+          <Vacio icono={Inbox} titulo="Tu bandeja está vacía">Pega una oferta en Analizar oferta para empezar.</Vacio>
         ) : (
           <div className="flex flex-col gap-3">
             {bandeja.slice(0, 3).map((o) => (

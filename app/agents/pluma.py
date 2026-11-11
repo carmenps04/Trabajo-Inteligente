@@ -134,7 +134,7 @@ REGLAS ESTRICTAS (si rompes una, el texto se rechaza):
 4. Mantén el mismo `indice` y la misma cantidad de bullets por ítem.
 5. Usa el vocabulario de la oferta cuando describa lo MISMO que hizo el
    candidato. Empieza cada bullet con un verbo en pasado.
-6. Escribe en español, claro y sin adornos ("apasionado", "experto").
+6. Escribe en español de España, claro y sin adornos ("apasionado", "experto").
 7. Respeta el grado de participación original: si dice "apoyo en" o
    "participación en", no lo conviertas en algo que hizo solo ("revisé",
    "lideré"). Usa "apoyé en", "participé en", "colaboré en".
