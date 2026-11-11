@@ -14,7 +14,22 @@ import { Aviso, Boton, Campo, Cargando, Tarjeta, claseCampo, cx } from "./ui";
 type ProyectoB = { id: number; nombre: string; contexto: string; fecha: string; logros: string; stack: string };
 type ExperienciaB = { id: number; empresa: string; cargo: string; ubicacion: string; inicio: string; fin: string; logros: string; stack: string };
 type GrupoB = { id: number; grupo: string; items: string };
-type Borrador = { perfil: string; proyectos: ProyectoB[]; experiencia: ExperienciaB[]; habilidades: GrupoB[]; certificados: string };
+type EducacionB = { id: number; titulo: string; institucion: string; inicio: string; fin: string; detalle: string };
+type ContactoB = { nombre: string; titular: string; email: string; telefono: string; ubicacion: string; linkedin: string; github: string };
+type Borrador = {
+  contacto: ContactoB; perfil: string; proyectos: ProyectoB[]; experiencia: ExperienciaB[]; habilidades: GrupoB[];
+  educacion: EducacionB[]; certificados: string; idiomas: string; competencias: string;
+};
+
+const CAMPOS_CONTACTO: { clave: keyof ContactoB; etiqueta: string; placeholder: string }[] = [
+  { clave: "nombre", etiqueta: "Nombre y apellidos", placeholder: "" },
+  { clave: "titular", etiqueta: "Titular (opcional)", placeholder: "Analista de datos junior" },
+  { clave: "email", etiqueta: "Email", placeholder: "nombre@correo.com" },
+  { clave: "telefono", etiqueta: "Teléfono (opcional)", placeholder: "+34 600 000 000" },
+  { clave: "ubicacion", etiqueta: "Ubicación (opcional)", placeholder: "Granada, España" },
+  { clave: "linkedin", etiqueta: "LinkedIn (opcional)", placeholder: "linkedin.com/in/tu-perfil" },
+  { clave: "github", etiqueta: "GitHub (opcional)", placeholder: "github.com/tu-usuario" },
+];
 
 let siguienteId = 1;
 const nuevoId = () => siguienteId++;
@@ -31,7 +46,12 @@ function textoAItem(t: string) {
 }
 
 function aBorrador(cv: CVBase): Borrador {
+  const c = cv.contacto;
   return {
+    contacto: {
+      nombre: c.nombre ?? "", titular: c.titular ?? "", email: c.email ?? "", telefono: c.telefono ?? "",
+      ubicacion: c.ubicacion ?? "", linkedin: c.linkedin ?? "", github: c.github ?? "",
+    },
     perfil: cv.perfil,
     proyectos: cv.proyectos.map((p) => ({
       id: nuevoId(), nombre: p.nombre, contexto: p.contexto ?? "", fecha: p.fecha ?? "",
@@ -42,13 +62,23 @@ function aBorrador(cv: CVBase): Borrador {
       logros: e.logros.join("\n"), stack: e.stack.join(", "),
     })),
     habilidades: cv.habilidades.map((g) => ({ id: nuevoId(), grupo: g.grupo, items: g.items.map(itemATexto).join(", ") })),
+    educacion: cv.educacion.map((e) => ({
+      id: nuevoId(), titulo: e.titulo, institucion: e.institucion, inicio: e.inicio ?? "", fin: e.fin ?? "", detalle: e.detalle ?? "",
+    })),
     certificados: cv.certificados.map((c) => `${c.nombre} | ${c.emisor}`).join("\n"),
+    idiomas: cv.idiomas.map((i) => `${i.idioma} | ${i.nivel}`).join("\n"),
+    competencias: cv.competencias.join(", "),
   };
 }
 
 function aCV(b: Borrador, original: CVBase): CVBase {
   return {
-    ...original, // contacto, educación, idiomas...: se editan en el YAML
+    ...original, // "logros" (premios) aún se edita solo en el YAML
+    contacto: {
+      nombre: b.contacto.nombre.trim(), email: b.contacto.email.trim(),
+      titular: opcional(b.contacto.titular), telefono: opcional(b.contacto.telefono), ubicacion: opcional(b.contacto.ubicacion),
+      linkedin: opcional(b.contacto.linkedin), github: opcional(b.contacto.github),
+    },
     perfil: b.perfil.trim(),
     proyectos: b.proyectos.map((p) => ({
       nombre: p.nombre.trim(), contexto: opcional(p.contexto), fecha: opcional(p.fecha),
@@ -59,15 +89,27 @@ function aCV(b: Borrador, original: CVBase): CVBase {
       inicio: e.inicio.trim(), fin: e.fin.trim(), logros: lineas(e.logros), stack: comas(e.stack),
     })),
     habilidades: b.habilidades.map((g) => ({ grupo: g.grupo.trim(), items: comas(g.items).map(textoAItem) })),
+    educacion: b.educacion.map((e) => ({
+      titulo: e.titulo.trim(), institucion: e.institucion.trim(),
+      inicio: opcional(e.inicio), fin: opcional(e.fin), detalle: opcional(e.detalle),
+    })),
     certificados: lineas(b.certificados).map((l) => {
       const [nombre, ...resto] = l.split("|");
       return { nombre: nombre.trim(), emisor: resto.join("|").trim() };
     }),
+    idiomas: lineas(b.idiomas).map((l) => {
+      const [idioma, ...resto] = l.split("|");
+      return { idioma: idioma.trim(), nivel: resto.join("|").trim() };
+    }),
+    competencias: comas(b.competencias),
   };
 }
 
 function errores(cv: CVBase): string[] {
   const e: string[] = [];
+  if (!cv.contacto.nombre) e.push("Falta tu nombre en los datos de contacto.");
+  if (!cv.contacto.email) e.push("Falta tu email en los datos de contacto.");
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cv.contacto.email)) e.push("El email no parece válido.");
   if (!cv.perfil) e.push("El perfil profesional está vacío.");
   cv.proyectos.forEach((p, i) => {
     const quien = p.nombre || `El proyecto ${i + 1}`;
@@ -84,7 +126,11 @@ function errores(cv: CVBase): string[] {
     if (!g.grupo) e.push(`El grupo de habilidades ${i + 1} no tiene nombre.`);
     if (!g.items.length) e.push(`El grupo "${g.grupo || i + 1}" no tiene habilidades.`);
   });
+  cv.educacion.forEach((x, i) => {
+    if (!x.titulo || !x.institucion) e.push(`${x.titulo || `La formación ${i + 1}`}: falta el título o el centro.`);
+  });
   cv.certificados.forEach((c) => { if (!c.emisor) e.push(`Al certificado "${c.nombre}" le falta el emisor (Nombre | Emisor).`); });
+  cv.idiomas.forEach((x) => { if (!x.nivel) e.push(`Al idioma "${x.idioma}" le falta el nivel (Idioma | Nivel).`); });
   return e;
 }
 
@@ -144,7 +190,7 @@ export default function EditorCV() {
   if (!b || !cv) return <Cargando />;
 
   const cambiar = (parcial: Partial<Borrador>) => setB({ ...b, ...parcial });
-  function lista<K extends "proyectos" | "experiencia" | "habilidades">(clave: K) {
+  function lista<K extends "proyectos" | "experiencia" | "habilidades" | "educacion">(clave: K) {
     const items = b![clave] as Borrador[K];
     return {
       editar: (id: number, cambio: Partial<Borrador[K][number]>) =>
@@ -163,6 +209,7 @@ export default function EditorCV() {
   const proyectos = lista("proyectos");
   const experiencia = lista("experiencia");
   const habilidades = lista("habilidades");
+  const educacion = lista("educacion");
 
   return (
     <div className="flex flex-col gap-6">
@@ -170,7 +217,6 @@ export default function EditorCV() {
       <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-bg px-1 py-3">
         <p className="text-sm text-ink-2">
           {sucio ? <span className="font-medium text-warn">Tienes cambios sin guardar.</span> : "Pluma solo puede usar lo que está aquí."}
-          {" "}Contacto, educación e idiomas se editan en <code className="font-mono text-xs">data/cv_base.yaml</code>.
         </p>
         <div className="flex gap-2">
           <Boton variante="fantasma" icono={RotateCcw} disabled={!sucio || guardar.isPending} onClick={() => setB(aBorrador(original))}>Descartar</Boton>
@@ -185,6 +231,17 @@ export default function EditorCV() {
           <ul className="list-disc pl-4">{problemas.map((p) => <li key={p}>{p}</li>)}</ul>
         </Aviso>
       )}
+
+      <Bloque titulo="Datos de contacto" ayuda="Van en la cabecera del CV tal cual: la IA no los toca.">
+        <Tarjeta className="grid gap-3 sm:grid-cols-2">
+          {CAMPOS_CONTACTO.map(({ clave, etiqueta, placeholder }) => (
+            <Campo key={clave} etiqueta={etiqueta}>
+              <input className={claseCampo} value={b.contacto[clave]} placeholder={placeholder}
+                     onChange={(e) => cambiar({ contacto: { ...b.contacto, [clave]: e.target.value } })} />
+            </Campo>
+          ))}
+        </Tarjeta>
+      </Bloque>
 
       <Bloque titulo="Perfil profesional" ayuda="3 o 4 líneas: qué estudias, en qué te enfocas, qué has hecho y qué prácticas buscas. Pluma lo adapta a cada oferta.">
         <textarea className={cx(claseCampo, "min-h-28")} value={b.perfil} onChange={(e) => cambiar({ perfil: e.target.value })} />
@@ -250,8 +307,37 @@ export default function EditorCV() {
         </Tarjeta>
       </Bloque>
 
+      <Bloque
+        titulo={`Formación (${b.educacion.length})`}
+        accion={<Boton icono={Plus} onClick={() => cambiar({ educacion: [{ id: nuevoId(), titulo: "", institucion: "", inicio: "", fin: "", detalle: "" }, ...b.educacion] })}>Añadir formación</Boton>}
+      >
+        {b.educacion.map((x, i) => (
+          <Item key={x.id} titulo={x.titulo || "Formación nueva"} subtitulo={[x.institucion, [x.inicio, x.fin].filter(Boolean).join(" – ")].filter(Boolean).join(" · ")}
+                abierto={!x.titulo} primero={i === 0} ultimo={i === b.educacion.length - 1}
+                onSubir={() => educacion.mover(x.id, -1)} onBajar={() => educacion.mover(x.id, 1)} onQuitar={() => educacion.quitar(x.id)}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Campo etiqueta="Título"><input className={claseCampo} value={x.titulo} placeholder="Grado en ..." onChange={(e) => educacion.editar(x.id, { titulo: e.target.value })} /></Campo>
+              <Campo etiqueta="Centro"><input className={claseCampo} value={x.institucion} placeholder="Universidad de Granada" onChange={(e) => educacion.editar(x.id, { institucion: e.target.value })} /></Campo>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Campo etiqueta="Inicio (opcional)"><input className={claseCampo} value={x.inicio} placeholder="Sept. 2021" onChange={(e) => educacion.editar(x.id, { inicio: e.target.value })} /></Campo>
+              <Campo etiqueta="Fin (opcional)"><input className={claseCampo} value={x.fin} placeholder="Jun. 2025" onChange={(e) => educacion.editar(x.id, { fin: e.target.value })} /></Campo>
+              <Campo etiqueta="Detalle (opcional)"><input className={claseCampo} value={x.detalle} placeholder="TFG, nota media..." onChange={(e) => educacion.editar(x.id, { detalle: e.target.value })} /></Campo>
+            </div>
+          </Item>
+        ))}
+      </Bloque>
+
       <Bloque titulo="Certificaciones" ayuda="Una por línea, con el emisor después de una barra: SQL Completo | midudev">
         <textarea className={cx(claseCampo, "min-h-20 font-mono text-xs")} value={b.certificados} onChange={(e) => cambiar({ certificados: e.target.value })} />
+      </Bloque>
+
+      <Bloque titulo="Idiomas" ayuda="Uno por línea, con el nivel después de una barra: Inglés | B2">
+        <textarea className={cx(claseCampo, "min-h-20 font-mono text-xs")} value={b.idiomas} onChange={(e) => cambiar({ idiomas: e.target.value })} />
+      </Bloque>
+
+      <Bloque titulo="Competencias" ayuda="Separadas por comas: Trabajo en equipo, Comunicación efectiva">
+        <input className={claseCampo} value={b.competencias} onChange={(e) => cambiar({ competencias: e.target.value })} />
       </Bloque>
     </div>
   );

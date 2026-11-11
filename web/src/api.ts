@@ -117,15 +117,18 @@ export type Perfil = {
 
 /** El CV base completo (data/cv_base.yaml), tal como lo valida app/cv/modelo.py. */
 export type CVBase = {
-  contacto: Record<string, string | null | undefined>;
+  contacto: {
+    nombre: string; email: string; titular?: string | null; telefono?: string | null;
+    ubicacion?: string | null; linkedin?: string | null; github?: string | null;
+  };
   perfil: string;
   experiencia: { empresa: string; cargo: string; ubicacion?: string | null; inicio: string; fin: string; logros: string[]; stack: string[] }[];
   proyectos: { nombre: string; contexto?: string | null; fecha?: string | null; logros: string[]; stack: string[] }[];
   habilidades: { grupo: string; items: { nombre: string; nivel?: string | null }[] }[];
-  educacion: unknown[];
+  educacion: { titulo: string; institucion: string; inicio?: string | null; fin?: string | null; detalle?: string | null }[];
   logros: unknown[];
   certificados: { nombre: string; emisor: string }[];
-  idiomas: unknown[];
+  idiomas: { idioma: string; nivel: string }[];
   competencias: string[];
 };
 
