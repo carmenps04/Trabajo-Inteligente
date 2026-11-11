@@ -61,7 +61,7 @@ para que decida si lo acepta. No reescribas nada.
 
 Para cada cambio responde:
 - motivo: qué cambió y por qué ayuda para esta oferta, en 1 o 2 frases
-  claras, hablándole al candidato ("Agregué...", "Resumí...").
+  claras, hablándole al candidato ("Añadí...", "Resumí...").
 - requisitos: los requisitos de la oferta que el cambio atiende, escritos
   EXACTAMENTE como en la lista de requisitos. Vacío si no atiende ninguno.
   No cites un requisito que el texto nuevo no mencione.

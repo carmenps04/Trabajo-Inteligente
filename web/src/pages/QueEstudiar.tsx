@@ -121,13 +121,13 @@ function YaLoAprendi({ opciones }: { opciones: { tecnologia: string; categoria: 
     mutationFn: () => api.guardarHabilidad({
       nombre: tech, categoria: opciones.find((o) => o.tecnologia === tech)!.categoria, nivel, evidencia: evidencia.trim(),
     }),
-    onSuccess: () => { qc.invalidateQueries(); avisar(`${tech} agregado a tu perfil.`); setEvidencia(""); },
+    onSuccess: () => { qc.invalidateQueries(); avisar(`${tech} añadido a tu perfil.`); setEvidencia(""); },
     onError: (e) => avisar(e.message, true),
   });
   return (
     <Seccion titulo="Ya lo aprendí">
       <Tarjeta>
-        <p className="mb-4 text-sm text-ink-2">Marca solo lo que puedas demostrar. Se agrega a tu perfil y se recalculan tus Match Score.</p>
+        <p className="mb-4 text-sm text-ink-2">Marca solo lo que puedas demostrar. Se añade a tu perfil y se recalculan tus Match Score.</p>
         <form className="grid gap-3 md:grid-cols-[1fr_160px_2fr_auto] md:items-end"
               onSubmit={(e) => { e.preventDefault(); if (evidencia.trim()) guardar.mutate(); }}>
           <Campo etiqueta="Tecnología">
@@ -143,7 +143,7 @@ function YaLoAprendi({ opciones }: { opciones: { tecnologia: string; categoria: 
           <Campo etiqueta="Evidencia">
             <input className={claseCampo} value={evidencia} onChange={(e) => setEvidencia(e.target.value)} placeholder="Proyecto en GitHub, curso con laboratorio..." />
           </Campo>
-          <Boton type="submit" variante="primario" icono={Plus} cargando={guardar.isPending} disabled={!evidencia.trim()}>Agregar</Boton>
+          <Boton type="submit" variante="primario" icono={Plus} cargando={guardar.isPending} disabled={!evidencia.trim()}>Añadir</Boton>
         </form>
       </Tarjeta>
     </Seccion>

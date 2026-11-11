@@ -193,7 +193,7 @@ export default function EditorCV() {
       <Bloque
         titulo={`Proyectos (${b.proyectos.length})`}
         ayuda="Pon todos, aunque no quepan en una hoja: Pluma elige los que mejor encajan con cada oferta. El orden de aquí es el orden de preferencia."
-        accion={<Boton icono={Plus} onClick={() => cambiar({ proyectos: [{ id: nuevoId(), nombre: "", contexto: "", fecha: "", logros: "", stack: "" }, ...b.proyectos] })}>Agregar proyecto</Boton>}
+        accion={<Boton icono={Plus} onClick={() => cambiar({ proyectos: [{ id: nuevoId(), nombre: "", contexto: "", fecha: "", logros: "", stack: "" }, ...b.proyectos] })}>Añadir proyecto</Boton>}
       >
         {b.proyectos.map((p, i) => (
           <Item key={p.id} titulo={p.nombre || "Proyecto nuevo"} subtitulo={[p.contexto, p.fecha].filter(Boolean).join(" · ")}
@@ -212,7 +212,7 @@ export default function EditorCV() {
 
       <Bloque
         titulo={`Experiencia laboral (${b.experiencia.length})`}
-        accion={<Boton icono={Plus} onClick={() => cambiar({ experiencia: [{ id: nuevoId(), empresa: "", cargo: "", ubicacion: "", inicio: "", fin: "", logros: "", stack: "" }, ...b.experiencia] })}>Agregar experiencia</Boton>}
+        accion={<Boton icono={Plus} onClick={() => cambiar({ experiencia: [{ id: nuevoId(), empresa: "", cargo: "", ubicacion: "", inicio: "", fin: "", logros: "", stack: "" }, ...b.experiencia] })}>Añadir experiencia</Boton>}
       >
         {b.experiencia.map((x, i) => (
           <Item key={x.id} titulo={x.empresa ? `${x.empresa} | ${x.cargo}` : "Experiencia nueva"} subtitulo={[x.inicio, x.fin].filter(Boolean).join(" – ")}
@@ -236,7 +236,7 @@ export default function EditorCV() {
       <Bloque
         titulo="Habilidades técnicas"
         ayuda='Separadas por comas. Solo lo que puedes defender en una entrevista; el nivel es opcional y va entre paréntesis: "SQL (Intermedio)".'
-        accion={<Boton icono={Plus} onClick={() => cambiar({ habilidades: [...b.habilidades, { id: nuevoId(), grupo: "", items: "" }] })}>Agregar grupo</Boton>}
+        accion={<Boton icono={Plus} onClick={() => cambiar({ habilidades: [...b.habilidades, { id: nuevoId(), grupo: "", items: "" }] })}>Añadir grupo</Boton>}
       >
         <Tarjeta className="flex flex-col gap-3">
           {b.habilidades.map((g, i) => (

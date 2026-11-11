@@ -128,7 +128,7 @@ class Respuesta(BaseModel):
 def responder(thread_id: str, respuestas: list[Respuesta]):
     for r in respuestas:
         if r.la_tengo and not (r.donde or "").strip():
-            raise HTTPException(400, f"Indica dónde usaste {r.tecnologia}, o marca que no lo tienes.")
+            raise HTTPException(400, f"Indica dónde has usado {r.tecnologia}, o marca que no lo tienes.")
     try:
         return services.responder_preguntas(thread_id, [r.model_dump(exclude_none=True) for r in respuestas])
     except services.FlujoNoEspera as exc:
@@ -291,7 +291,7 @@ def iniciar_cv_en_vivo(job_id: int):
 def responder_en_vivo(thread_id: str, respuestas: list[Respuesta]):
     for r in respuestas:
         if r.la_tengo and not (r.donde or "").strip():
-            raise HTTPException(400, f"Indica dónde usaste {r.tecnologia}, o marca que no lo tienes.")
+            raise HTTPException(400, f"Indica dónde has usado {r.tecnologia}, o marca que no lo tienes.")
     try:
         return _transmision(services.responder_preguntas_en_vivo(
             thread_id, [r.model_dump(exclude_none=True) for r in respuestas]))

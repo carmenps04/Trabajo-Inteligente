@@ -44,3 +44,17 @@ def test_prompt_de_lupa_trata_alternativas_conceptos_y_nombres():
     assert "márcalas TODAS como\n  requirement_type=preferred" in PROMPT_TEMPLATE
     assert '"business intelligence"' in PROMPT_TEMPLATE
     assert '-> "Excel"' in PROMPT_TEMPLATE
+
+
+def test_pluma_no_nombra_el_puesto_en_el_perfil():
+    # Caso real: el perfil acababa en "orientando mi perfil hacia la
+    # posición de Sales Analyst".
+    from app.agents.pluma import PROMPT_REDACCION
+    assert "no nombres el puesto ni la empresa" in PROMPT_REDACCION
+
+
+def test_textos_de_los_documentos_en_espanol_de_espana():
+    from app.cv.cargador import RAIZ
+    texto = (RAIZ / "app" / "agents" / "imprenta.py").read_text(encoding="utf-8")
+    assert "lo usaste" not in texto
+    assert "Agrégalo" not in texto

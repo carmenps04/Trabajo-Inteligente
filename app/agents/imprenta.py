@@ -333,10 +333,10 @@ def generar_brechas(cv: CVBase, state: CVState, carpeta: Path) -> Path:
     faltan_obligatorios = [f["nombre"] for f in filas if f["estado"] == ESTADO_FALTA and f["requirement_type"] == "required"]
     flojos = [f["nombre"] for f in filas if f["estado"] == ESTADO_NIVEL_MENOR]
     if faltan_obligatorios:
-        _vineta(doc, f"Si preguntan por {', '.join(faltan_obligatorios)}: reconoce que aún no lo usaste en un "
+        _vineta(doc, f"Si preguntan por {', '.join(faltan_obligatorios)}: reconoce que aún no lo has usado en un "
                      "proyecto y explica cómo lo aprenderías apoyándote en lo que sí dominas.")
     if flojos:
-        _vineta(doc, f"Para {', '.join(flojos)}: prepara un ejemplo concreto de tu CV donde lo usaste y "
+        _vineta(doc, f"Para {', '.join(flojos)}: prepara un ejemplo concreto de tu CV donde lo hayas usado y "
                      "qué te faltaría para el nivel pedido.")
     if not faltan_obligatorios and not flojos:
         doc.add_paragraph("No hay brechas obligatorias: prepara ejemplos concretos de tus proyectos para cada requisito.")
@@ -346,7 +346,7 @@ def generar_brechas(cv: CVBase, state: CVState, carpeta: Path) -> Path:
     if solo_cv:
         avisos.append(
             f"{', '.join(solo_cv)} aparece en tu CV pero no en tu perfil (user_skill), así que no suma a tu "
-            "Match Score. Agrégalo con scripts/cargar_mi_perfil.py."
+            "Match Score. Añádelo en Mi perfil → Habilidades."
         )
     if state.get("violaciones"):
         avisos.append(

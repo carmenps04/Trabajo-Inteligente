@@ -95,7 +95,7 @@ function NuevaHabilidad() {
 
   return (
     <Tarjeta className="h-fit">
-      <p className="mb-4 font-semibold text-ink">Agregar o actualizar una habilidad</p>
+      <p className="mb-4 font-semibold text-ink">Añadir o actualizar una habilidad</p>
       <form className="flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); if (valido) guardar.mutate(); }}>
         <Campo etiqueta="Tecnología"><input className={claseCampo} value={f.nombre} placeholder="Ej.: dbt" onChange={(e) => setF({ ...f, nombre: e.target.value })} /></Campo>
         <div className="grid grid-cols-2 gap-3">
@@ -111,7 +111,7 @@ function NuevaHabilidad() {
           </Campo>
         </div>
         <Campo etiqueta="Meses de experiencia (opcional)"><input type="number" min={0} className={claseCampo} value={f.meses} onChange={(e) => setF({ ...f, meses: e.target.value })} /></Campo>
-        <Campo etiqueta="Evidencia" ayuda="Dónde lo usaste: es lo que te respalda en una entrevista.">
+        <Campo etiqueta="Evidencia" ayuda="Dónde lo has usado: es lo que te respalda en una entrevista.">
           <input className={claseCampo} value={f.evidencia} placeholder="Proyecto, trabajo o curso" onChange={(e) => setF({ ...f, evidencia: e.target.value })} />
         </Campo>
         <Boton type="submit" variante="primario" icono={Plus} cargando={guardar.isPending} disabled={!valido}>Guardar y recalcular</Boton>

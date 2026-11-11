@@ -164,7 +164,7 @@ export default function Analizar() {
           </p>
           <ol className="list-decimal space-y-1 pl-5 text-sm text-ink">
             <li>Copia el código con el botón de abajo.</li>
-            <li>En el navegador, clic derecho en la barra de favoritos → <i>Agregar página</i>.</li>
+            <li>En el navegador, clic derecho en la barra de favoritos → <i>Añadir página</i>.</li>
             <li>Nombre: <b>Enviar a Job-Intelligence</b>. En <b>URL</b>, pega el código.</li>
             <li>¿Ya lo tenías? Clic derecho sobre él → <i>Editar</i> y reemplaza la URL por el código nuevo.</li>
           </ol>

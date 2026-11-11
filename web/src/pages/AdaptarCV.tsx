@@ -240,7 +240,7 @@ function Revision({ flujo, onListo, alEvento, alEmpezar, alFallar }: {
       <div className="flex flex-col gap-3">
         {flujo.notario_error && (
           <Aviso tono="warn" titulo="Notario no estuvo disponible">
-            Gemini no respondió, así que los motivos son automáticos: dicen qué términos se agregaron, no por qué.
+            Gemini no respondió, así que los motivos son automáticos: dicen qué términos se añadieron, no por qué.
           </Aviso>
         )}
         {flujo.estructura.length > 0 && (
@@ -343,7 +343,7 @@ function Preguntas({ flujo, onListo, alEvento, alEmpezar, alFallar }: {
                       <option value="basico">Básico</option><option value="intermedio">Intermedio</option><option value="avanzado">Avanzado</option>
                     </select>
                   </Campo>
-                  <Campo etiqueta="¿Dónde lo usaste?">
+                  <Campo etiqueta="¿Dónde lo has usado?">
                     <input className={claseCampo} value={r.donde} placeholder="Proyecto, trabajo o curso"
                            onChange={(e) => actualizar(i, { donde: e.target.value })} />
                   </Campo>
@@ -357,7 +357,7 @@ function Preguntas({ flujo, onListo, alEvento, alEmpezar, alFallar }: {
         })}
       </div>
       <div className="mt-4 flex flex-col gap-3">
-        {faltaDonde && <p className="text-sm text-warn">Indica dónde usaste {faltaDonde.tecnologia}, o marca «No».</p>}
+        {faltaDonde && <p className="text-sm text-warn">Indica dónde has usado {faltaDonde.tecnologia}, o marca «No».</p>}
         {enviar.isError && <Aviso tono="bad">{enviar.error.message}</Aviso>}
         <div>
           <Boton variante="primario" icono={Send} cargando={enviar.isPending} disabled={!!faltaDonde} onClick={() => enviar.mutate()}>

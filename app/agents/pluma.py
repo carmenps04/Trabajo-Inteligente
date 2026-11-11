@@ -142,6 +142,9 @@ REGLAS ESTRICTAS (si rompes una, el texto se rechaza):
    permitida ("Power BI", "SQL Server"). Los conceptos generales
    ("calidad de datos", "geolocalización", "dashboards") van en
    minúscula a mitad de frase, como en español normal.
+9. En el perfil no nombres el puesto ni la empresa de la oferta
+   ("orientando mi perfil hacia la posición de Sales Analyst"): el
+   perfil describe al candidato, no a qué oferta se presenta.
 
 OFERTA
 Puesto: {puesto}
