@@ -12,6 +12,11 @@ def test_gemini_valida_sin_avisos():
     assert revisar_gemini_key("AIzaSyFALSAfalsaFALSAfalsa") == ([], [])
 
 
+def test_gemini_con_otro_formato_no_avisa():
+    # Las claves de AI Studio no siempre empiezan por "AIza".
+    assert revisar_gemini_key("OtroFormatoDeClave123") == ([], [])
+
+
 def test_gemini_con_espacios_es_error():
     errores, _ = revisar_gemini_key(" AIzaSyFALSA ")
     assert errores

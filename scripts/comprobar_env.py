@@ -33,8 +33,8 @@ def revisar_gemini_key(valor: str | None) -> tuple[list[str], list[str]]:
         errores.append("GEMINI_API_KEY tiene espacios al principio o al final.")
     if valor[0] in "\"'" or valor[-1] in "\"'":
         avisos.append("GEMINI_API_KEY está entre comillas: funciona, pero no hacen falta.")
-    if not valor.strip("\"' ").startswith("AIza"):
-        avisos.append("GEMINI_API_KEY no empieza por 'AIza' como las claves habituales de Google; revisa que sea la correcta.")
+    # No se valida el prefijo: el formato de las claves de Google cambia.
+    # Para saber si la clave funciona, usa --gemini.
     return errores, avisos
 
 
@@ -111,7 +111,7 @@ def conectar_y_revisar_tablas(url: str) -> tuple[list[str], list[str]]:
     return errores, avisos
 
 
-def probar_gemini() -> tuple[list[str], list[str]]:
+def probar_gemini() -> tuple[list[str], list[str], list[str]]:
     from pydantic import BaseModel
 
     from app import llm
@@ -121,16 +121,18 @@ def probar_gemini() -> tuple[list[str], list[str]]:
 
     r = llm.generar_estructurado('Responde con respuesta="ok".', Eco, agente="lupa")
     if not r.success:
-        return [f"La IA no respondió: {r.error[:300]}"], []
-    return [], [f"La IA respondió con el modelo {r.modelo}."]
+        return [f"La IA no respondió: {r.error[:300]}"], [], []
+    return [], [], [f"La IA respondió con el modelo {r.modelo}."]
 
 
-def _imprimir(titulo: str, errores: list[str], avisos: list[str]) -> None:
+def _imprimir(titulo: str, errores: list[str], avisos: list[str], info: list[str] = ()) -> None:
     print(f"\n{titulo}: {'OK' if not errores else 'REVISAR'}")
     for e in errores:
         print(f"  [x] {e}")
     for a in avisos:
         print(f"  [!] {a}")
+    for i in info:
+        print(f"  {i}")
 
 
 def main(argv: list[str]) -> int:
@@ -156,8 +158,8 @@ def main(argv: list[str]) -> int:
         total_errores += len(errores)
 
     if "--gemini" in argv:
-        errores, avisos = probar_gemini()
-        _imprimir("Llamada de prueba a la IA", errores, avisos)
+        errores, avisos, info = probar_gemini()
+        _imprimir("Llamada de prueba a la IA", errores, avisos, info)
         total_errores += len(errores)
 
     print("\nTodo listo." if total_errores == 0 else f"\n{total_errores} problema(s) por resolver.")
