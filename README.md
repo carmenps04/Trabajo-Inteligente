@@ -1,10 +1,10 @@
 # Job-Intelligence
 
-Asistente personal de búsqueda de empleo para perfiles de datos en Perú. Busca ofertas en fuentes que lo permiten, extrae sus requisitos con IA (Gemini, con respaldo en Groq u Ollama), calcula qué tanto encajas, adapta tu CV **sin inventar nada** y te dice qué estudiar primero.
+Asistente personal de búsqueda de empleo para perfiles junior de datos, BI e IA en España (Granada o remoto). Recibe las ofertas que pegas a mano (texto o URL), extrae sus requisitos con IA (Gemini, con respaldo en Groq u Ollama), calcula qué tanto encajas, adapta tu CV **sin inventar nada** y te dice qué estudiar primero.
 
 Está construido como un sistema de **agentes con una sola tarea cada uno**, orquestados con LangGraph, y corre en local con una app web en React.
 
-> Proyecto personal de José Luis Chuque (Ing. de Sistemas, UNMSM). Lo uso en mi propia búsqueda de prácticas en datos.
+> Fork de Job-Intelligence, de José Luis Chuque Castilla ([licencia MIT](LICENSE)), adaptado a la búsqueda de empleo en España: portales españoles (InfoJobs, Tecnoempleo), niveles de inglés MCER, fechas en formato español y búsqueda automática desactivada.
 
 ---
 
@@ -19,11 +19,11 @@ Postular bien a una oferta toma tiempo: leerla, ver qué piden, compararlo con l
 | **Analizar oferta** | Pegas el texto (y opcionalmente el link), una URL, o la envías desde el navegador con el marcador "Enviar a Job-Intelligence". Extrae puesto, empresa, área, inglés y cada tecnología con su tipo (obligatoria o deseable), su nivel y la frase de la oferta que lo respalda. |
 | **Match Score** | Compara la oferta con tu perfil y da un puntaje de 0 a 100, junto con lo que te falta y lo que tienes en un nivel menor al pedido. |
 | **Adaptar CV** | Te pregunta por lo que falta, reescribe tu CV con el vocabulario de la oferta, **te muestra cada cambio de la IA con su explicación para que lo aceptes o rechaces**, y genera dos Word: el **CV listo para enviar** y un **informe de brechas** con qué estudiar y cómo abordarlo en la entrevista. |
-| **Bandeja** | Ofertas nuevas que se buscaron solas en Get on Board, ordenadas por Match Score. |
+| **Bandeja** | Ofertas que aún no revisas, ordenadas por Match Score. La búsqueda en Get on Board solo corre si pulsas el botón (casi no publica ofertas de España). |
 | **Postulaciones** | Estado de cada oferta (Postulada, Entrevista…) con su historial, y **cada versión del CV generada**: al postular queda marcada cuál enviaste, para saber qué tiene la empresa si te llaman. |
 | **Qué estudiar** | Ranking de lo que te conviene aprender según tus ofertas, y un plan de estudio con un proyecto por tecnología. |
 | **Agentes en vivo** | Al analizar una oferta o adaptar el CV, ves a cada agente trabajar en tiempo real: cuándo empieza, qué hizo y cuánto tardó (Lupa extrae, Validador rechaza y Pluma corrige…). La página *Agentes* muestra el equipo, los flujos y su actividad reciente. Son los eventos reales de LangGraph transmitidos con Server-Sent Events, no una animación. |
-| **Rutina diaria** | Todas las mañanas busca ofertas, arma un resumen y te avisa con una notificación de Windows. Los lunes actualiza el plan de estudio. |
+| **Rutina diaria** | Todas las mañanas arma un resumen (ofertas nuevas y seguimientos) y te avisa con una notificación de Windows. Los lunes actualiza el plan de estudio. No busca ofertas sola salvo que actives `en_rutina_diaria` en `config/sabueso.yaml`. |
 
 ## Arquitectura
 
@@ -86,21 +86,24 @@ La interfaz (React) habla solo con la API REST de FastAPI, y la API solo llama a
 
 **Requisitos:** Node.js 20+ (para compilar el frontend), Python 3.13, una base PostgreSQL (yo uso Supabase) y una API key de Gemini. Opcional: una key de Groq o [Ollama](https://ollama.com) instalado, como respaldo cuando se agota la cuota de Gemini (ver `.env.example`).
 
-```bash
-python -m venv venv
-venv\Scripts\activate          # en Windows
+En Windows, desde PowerShell en la carpeta del proyecto:
+
+```powershell
+py -3.13 -m venv venv
+venv\Scripts\Activate.ps1      # si PowerShell lo bloquea: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 pip install -r requirements.txt
 copy .env.example .env         # y completa GEMINI_API_KEY y SUPABASE_DB_URL
+python -m scripts.comprobar_env  # verifica el .env antes de arrancar
 ```
 
 De dónde sacar los dos valores del `.env` (ambos son gratuitos):
 - **`GEMINI_API_KEY`:** entra a [Google AI Studio](https://aistudio.google.com/apikey) con tu cuenta de Google y crea una API key. El plan gratuito alcanza para el uso diario.
 - **`SUPABASE_DB_URL`:** crea un proyecto en [Supabase](https://supabase.com), pulsa **Connect** arriba del panel y copia la cadena de conexión (*Session pooler*, empieza con `postgresql://`). Reemplaza `[YOUR-PASSWORD]` por la contraseña que elegiste al crear el proyecto. Los scripts SQL del paso 1 se pueden pegar y ejecutar en el **SQL Editor** de Supabase.
 
-1. **Base de datos:** corre en orden `sql/schema_supabase_V1.sql`, `sql/001_revision_y_alias_empresa.sql` y `sql/002_fuente_getonbrd.sql`.
+1. **Base de datos:** corre en orden `sql/schema_supabase_V1.sql`, `sql/001_revision_y_alias_empresa.sql`, `sql/002_fuente_getonbrd.sql` y `sql/003_fuentes_espana.sql`.
 2. **Tu CV:** copia `data/cv_base.example.yaml` como `data/cv_base.yaml` y complétalo. Pon todo lo que hayas hecho, aunque no quepa en una página: Pluma elige qué mostrar para cada oferta.
 3. **Tu perfil:** declara tus habilidades desde la página *Mi perfil* o con `python -m scripts.cargar_mi_perfil`.
-   - **Qué ofertas busca Sabueso:** edita `config/sabueso.yaml`. Viene configurado para prácticas de datos en Perú; cambia `consultas` (qué se busca), `paises` (como los escribe Get on Board, por ejemplo `[Argentina]`), `incluir_remoto` y `palabras_clave_titulo` (palabras que debe tener el título) según los puestos que te interesen.
+   - **Qué ofertas busca Sabueso (opcional):** edita `config/sabueso.yaml`. Viene desactivado en la rutina diaria (`en_rutina_diaria: false`) y configurado para puestos junior de datos, BI e IA en España o remotos; cambia `consultas`, `paises`, `incluir_remoto` y `palabras_clave_titulo` si lo activas.
 4. **La app:**
    ```bash
    python -m scripts.iniciar
@@ -108,7 +111,7 @@ De dónde sacar los dos valores del `.env` (ambos son gratuitos):
    Abre `http://localhost:8000`: el mismo servidor sirve la app, la API y el endpoint del marcador del navegador. La primera vez compila el frontend (y después, cada vez que cambia). Las instrucciones para instalar el marcador están en *Analizar oferta*.
 5. **Opcional:**
    - Desarrollar el frontend con recarga en vivo: `npm run dev` dentro de `web/` (abre `http://localhost:5173`; necesita el servidor de Python corriendo).
-   - Rutina diaria a mano: `python -m scripts.rutina_diaria`.
+   - Rutina diaria a mano: `python -m scripts.rutina_diaria` (añade `--con-sabueso` para buscar también en Get on Board).
    - Programarla en Windows: `powershell -ExecutionPolicy Bypass -File scripts\programar_tarea.ps1`.
 6. **Tests:** `pytest`
 
@@ -139,7 +142,7 @@ Python 3.13 · LangGraph (+ checkpointer SQLite) · Gemini / Groq / Ollama vía 
 
 ## Limitaciones
 
-- **Una sola fuente automática.** Las ofertas de LinkedIn, Bumeran o Computrabajo se pegan a mano.
+- **Sin fuente automática activa.** Las ofertas de LinkedIn, InfoJobs, Indeed o Tecnoempleo se pegan a mano (o con el marcador del navegador). Get on Board sigue disponible bajo demanda, pero su catálogo es sobre todo de Latinoamérica.
 - **Muestra chica.** Los hallazgos de demanda son de mis ofertas, no del mercado.
 - **Cuota de Gemini.** El plan gratuito tiene un tope diario por modelo. Repartirlo entre agentes lo alarga, y Groq u Ollama cubren cuando se agota (Ollama en una laptop sin GPU es lento y redacta peor).
 - **Solo en local y para un usuario.** No tiene login; no está pensado para desplegarse así.
@@ -147,4 +150,4 @@ Python 3.13 · LangGraph (+ checkpointer SQLite) · Gemini / Groq / Ollama vía 
 
 ## Licencia
 
-[MIT](LICENSE): puedes usar, modificar y adaptar el código libremente, manteniendo el aviso de copyright.
+[MIT](LICENSE): puedes usar, modificar y adaptar el código libremente, manteniendo el aviso de copyright del autor original.
