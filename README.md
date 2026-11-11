@@ -100,7 +100,7 @@ De dónde sacar los dos valores del `.env` (ambos son gratuitos):
 - **`GEMINI_API_KEY`:** entra a [Google AI Studio](https://aistudio.google.com/apikey) con tu cuenta de Google y crea una API key. El plan gratuito alcanza para el uso diario.
 - **`SUPABASE_DB_URL`:** crea un proyecto en [Supabase](https://supabase.com), pulsa **Connect** arriba del panel y copia la cadena de conexión (*Session pooler*, empieza con `postgresql://`). Reemplaza `[YOUR-PASSWORD]` por la contraseña que elegiste al crear el proyecto. Los scripts SQL del paso 1 se pueden pegar y ejecutar en el **SQL Editor** de Supabase.
 
-1. **Base de datos:** corre en orden `sql/schema_supabase_V1.sql`, `sql/001_revision_y_alias_empresa.sql`, `sql/002_fuente_getonbrd.sql` y `sql/003_fuentes_espana.sql`.
+1. **Base de datos:** corre en orden `sql/schema_supabase_V1.sql`, `sql/001_revision_y_alias_empresa.sql`, `sql/002_fuente_getonbrd.sql`, `sql/003_fuentes_espana.sql` y `sql/004_almacen.sql`.
 2. **Tu CV:** copia `data/cv_base.example.yaml` como `data/cv_base.yaml` y complétalo. Pon todo lo que hayas hecho, aunque no quepa en una página: Pluma elige qué mostrar para cada oferta.
 3. **Tu perfil:** declara tus habilidades desde la página *Mi perfil* o con `python -m scripts.cargar_mi_perfil`.
    - **Qué ofertas busca Sabueso (opcional):** edita `config/sabueso.yaml`. Viene desactivado en la rutina diaria (`en_rutina_diaria: false`) y configurado para puestos junior de datos, BI e IA en España o remotos; cambia `consultas`, `paises`, `incluir_remoto` y `palabras_clave_titulo` si lo activas.
@@ -114,6 +114,12 @@ De dónde sacar los dos valores del `.env` (ambos son gratuitos):
    - Rutina diaria a mano: `python -m scripts.rutina_diaria` (añade `--con-sabueso` para buscar también en Get on Board).
    - Programarla en Windows: `powershell -ExecutionPolicy Bypass -File scripts\programar_tarea.ps1`.
 6. **Tests:** `pytest`
+
+## Login y datos en Supabase (para publicarla)
+
+- **Login:** con `APP_PASSWORD` en el entorno, la app pide contraseña (cookie de sesión de 30 días). En tu PC es opcional; en Cloud Run la app no arranca sin una de al menos 12 caracteres.
+- **Datos privados:** `app/almacen.py` guarda el CV base, las respuestas, el historial, los Word generados, el plan y la actividad en archivos (por defecto en tu PC) o en la tabla `almacen` de Supabase (`ALMACEN=supabase`, y siempre en Cloud Run). Los flujos pausados van a SQLite o a Postgres con el mismo criterio.
+- **Pasar tus datos del PC a Supabase:** `python -m scripts.subir_a_supabase --simular` para ver qué subiría y sin `--simular` para subirlo. No borra nada local.
 
 ## Estructura
 

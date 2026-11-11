@@ -20,6 +20,7 @@ from app.cv.cargador import RAIZ
 TABLAS_ESPERADAS = [
     "status", "source", "company", "company_alias", "technology",
     "technology_alias", "job", "job_status_history", "job_technology", "user_skill",
+    "almacen",  # sql/004_almacen.sql: datos privados para la versión publicada
 ]
 FUENTES_ESPERADAS = ["Get on Board", "InfoJobs", "Tecnoempleo"]  # migraciones 002 y 003
 
