@@ -96,8 +96,8 @@ class JobExtraction(BaseModel):
         )
     )
     source_name: Literal[
-        "LinkedIn", "Indeed", "Computrabajo", "Bumeran", "Get on Board",
-        "Career Page", "Otro", "no_especificado",
+        "LinkedIn", "Indeed", "InfoJobs", "Tecnoempleo", "Computrabajo",
+        "Bumeran", "Get on Board", "Career Page", "Otro", "no_especificado",
     ] = Field(
         description=(
             "Portal donde se publicó la oferta, SOLO si el texto lo menciona "

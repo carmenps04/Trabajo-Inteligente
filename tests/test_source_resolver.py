@@ -20,6 +20,12 @@ from app.source_resolver import resolver_source_desde_url, resolver_source
         ("https://pe.computrabajo.com/trabajo-de-analista", "Computrabajo"),
         ("https://www.computrabajo.com.pe/oferta/456", "Computrabajo"),
         ("https://www.bumeran.com.pe/empleos/analista.html", "Bumeran"),
+        # Portales de España.
+        ("https://es.linkedin.com/jobs/view/123", "LinkedIn"),
+        ("https://es.indeed.com/viewjob?jk=abc", "Indeed"),
+        ("https://www.indeed.es/viewjob?jk=abc", "Indeed"),
+        ("https://www.infojobs.net/granada/analista-datos/of-i123", "InfoJobs"),
+        ("https://www.tecnoempleo.com/analista-bi-granada/power-bi/rf-abc", "Tecnoempleo"),
         # Con puerto explícito y en mayúsculas: debe normalizar igual.
         ("https://WWW.LinkedIn.COM:443/jobs/1", "LinkedIn"),
     ],
@@ -115,3 +121,22 @@ def test_linkedin_queda_en_su_link_estable():
     assert canonicalizar_url("https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4012345678") == estable
     assert canonicalizar_url("https://pe.linkedin.com/jobs/view/analista-de-datos-at-empresa-4012345678?trk=x") == estable
     assert canonicalizar_url(estable + "/") == estable
+
+
+def test_fuentes_del_resolver_existen_en_el_literal_de_lupa():
+    """Si el dominio da un nombre que Lupa no conoce, el catálogo se fragmenta."""
+    from typing import get_args
+    from app.schemas import JobExtraction
+    from app.source_resolver import DOMINIO_A_SOURCE
+
+    permitidos = set(get_args(JobExtraction.model_fields["source_name"].annotation))
+    assert set(DOMINIO_A_SOURCE.values()) <= permitidos
+
+
+def test_fuentes_del_resolver_tienen_fila_en_los_sql():
+    from app.cv.cargador import RAIZ
+    from app.source_resolver import DOMINIO_A_SOURCE
+
+    sql = "".join(p.read_text(encoding="utf-8") for p in (RAIZ / "sql").glob("*.sql"))
+    for nombre in set(DOMINIO_A_SOURCE.values()):
+        assert f"'{nombre}'" in sql, nombre

@@ -23,7 +23,11 @@ from typing import Optional
 # el INSERT INTO source del schema y con el Literal de JobExtraction.
 DOMINIO_A_SOURCE = {
     "linkedin.com": "LinkedIn",
-    "indeed.com": "Indeed",
+    "indeed.com": "Indeed",          # también es.indeed.com
+    "indeed.es": "Indeed",
+    # Portales de España. Filas creadas en sql/003_fuentes_espana.sql.
+    "infojobs.net": "InfoJobs",
+    "tecnoempleo.com": "Tecnoempleo",
     "computrabajo.com": "Computrabajo",
     "computrabajo.com.pe": "Computrabajo",
     "bumeran.com": "Bumeran",
