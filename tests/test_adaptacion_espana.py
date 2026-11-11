@@ -29,3 +29,10 @@ def test_config_acepta_titulos_de_ia_y_descarta_senior():
 def test_prompt_de_lupa_traduce_niveles_mcer():
     assert "B1 o B2 -> intermedio" in PROMPT_TEMPLATE
     assert "C1 o C2 -> avanzado" in PROMPT_TEMPLATE
+
+
+def test_prompt_de_lupa_no_cuenta_lo_que_la_empresa_ofrece_como_requisito():
+    # Caso real: "Oportunidades para aprender sobre tecnología, negocios, IA"
+    # se extraía como requisito deseable de IA.
+    assert "lo que la empresa ofrece enseñar" in PROMPT_TEMPLATE
+    assert "la descripción de la empresa" in PROMPT_TEMPLATE

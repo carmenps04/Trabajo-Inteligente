@@ -292,6 +292,14 @@ solicitada de forma ESTRICTA:
   o claramente implícitos en el texto.
 - Cada tecnología detectada debe incluir la frase textual exacta
   (evidence_text) de donde la extrajiste.
+- Solo son requisitos lo que la oferta PIDE al candidato (requisitos,
+  "se valorará", "deseable", funciones que deberá hacer con esa
+  herramienta). NO son requisitos:
+  * lo que la empresa ofrece enseñar o la formación que recibirás
+    ("aprenderás", "oportunidades para aprender sobre IA", "formación en");
+  * la descripción de la empresa, su sector o sus productos
+    ("empresa líder en software cloud").
+  Si la oferta no pide ninguna tecnología concreta, technologies=[].
 - Si el texto indica que la oferta ya no está disponible, está cerrada
   o cubierta, responde is_offer_available=false y technologies=[].
 
