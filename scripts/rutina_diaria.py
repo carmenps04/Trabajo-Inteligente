@@ -1,11 +1,16 @@
 """
-Rutina diaria: Sabueso busca ofertas nuevas y Centinela arma el
-resumen y te avisa. La corre la tarea programada de Windows
-(scripts/programar_tarea.ps1), pero también se puede correr a mano:
+Rutina diaria: Centinela arma el resumen y te avisa. La corre la
+tarea programada de Windows (scripts/programar_tarea.ps1), pero
+también se puede correr a mano:
 
     python -m scripts.rutina_diaria
-    python -m scripts.rutina_diaria --sin-sabueso   (solo resumen)
+    python -m scripts.rutina_diaria --con-sabueso   (busca también en Get on Board)
+    python -m scripts.rutina_diaria --sin-sabueso   (nunca busca, aunque esté activo)
     python -m scripts.rutina_diaria --brujula       (fuerza el informe semanal)
+
+La búsqueda automática de Sabueso está DESACTIVADA por defecto: las
+ofertas se pegan a mano. Para reactivarla, pon `en_rutina_diaria: true`
+en config/sabueso.yaml.
 
 Los lunes (o con --brujula) Brújula actualiza el plan de estudio y
 deja un informe en salidas/brujula/.
@@ -35,14 +40,31 @@ def _configurar_log() -> logging.Logger:
     return logging.getLogger("rutina")
 
 
+def debe_buscar(argv: list[str], config: dict) -> bool:
+    """¿Corre Sabueso en esta rutina? Los argumentos mandan sobre la config."""
+    if "--sin-sabueso" in argv:
+        return False
+    if "--con-sabueso" in argv:
+        return True
+    return bool(config.get("en_rutina_diaria", False))
+
+
 def main() -> int:
     log = _configurar_log()
     resultado_sabueso = None
 
-    if "--sin-sabueso" not in sys.argv:
+    try:
+        config_sabueso = sabueso.cargar_config()
+    except Exception:
+        log.exception("No se pudo leer config/sabueso.yaml; Sabueso no correrá")
+        config_sabueso = {}
+
+    if not debe_buscar(sys.argv, config_sabueso):
+        log.info("Sabueso: no se ejecuta (en_rutina_diaria: false en config/sabueso.yaml o --sin-sabueso).")
+    else:
         log.info("Sabueso: buscando ofertas nuevas...")
         try:
-            resultado_sabueso = asdict(sabueso.ejecutar())
+            resultado_sabueso = asdict(sabueso.ejecutar(config_sabueso))
             log.info(
                 "Sabueso: %d encontradas, %d registradas, %d sin registrar, %d ya estaban, "
                 "%d fuera de filtro, %d errores",

@@ -1,5 +1,6 @@
 ﻿<#
-Registra la rutina diaria (Sabueso + Centinela) en el Programador de
+Registra la rutina diaria (resumen de Centinela; Sabueso solo si está
+activado en config/sabueso.yaml) en el Programador de
 tareas de Windows. Córrelo UNA vez, desde la raíz del proyecto:
 
     powershell -ExecutionPolicy Bypass -File scripts\programar_tarea.ps1
@@ -27,7 +28,7 @@ $disparador = New-ScheduledTaskTrigger -Daily -At $Hora
 $opciones = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
 
 Register-ScheduledTask -TaskName "Job-Intelligence rutina diaria" `
-    -Description "Sabueso busca ofertas nuevas y Centinela arma el resumen diario." `
+    -Description "Centinela arma el resumen diario de ofertas y seguimientos." `
     -Action $accion -Trigger $disparador -Settings $opciones -Force | Out-Null
 
 Write-Host "Listo: la rutina correrá todos los días a las $Hora."

@@ -1,4 +1,10 @@
-# Qué busca Sabueso cada día. No contiene datos personales: va al repo.
+# Qué busca Sabueso. No contiene datos personales: va al repo.
+
+# ¿La rutina diaria (scripts/rutina_diaria.py) busca sola en Get on Board?
+# Desactivado: por ahora las ofertas se pegan a mano en "Analizar oferta".
+# Con false, Sabueso solo corre si lo pides (botón de la Bandeja o
+# `python -m scripts.rutina_diaria --con-sabueso`).
+en_rutina_diaria: false
 
 # Búsquedas que se hacen en cada fuente (una petición por búsqueda).
 consultas:
