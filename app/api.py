@@ -6,14 +6,14 @@ Solo traducen HTTP <-> app/services.py: la lógica sigue en los
 agentes, así que cambiar de interfaz no tocó nada del backend.
 """
 
-from pathlib import Path
+from urllib.parse import quote
 from typing import Literal, Optional
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-from app import pendientes, services
+from app import almacen, pendientes, services
 from app.cv.cargador import RAIZ, guardar_cv_base
 from app.cv.modelo import CVBase
 
@@ -149,11 +149,24 @@ def revisar(thread_id: str, revision: Revision):
 
 @router.get("/archivos")
 def descargar(ruta: str):
-    """Descarga un DOCX generado. Solo dentro de salidas/: nada más del disco."""
-    archivo = Path(ruta).resolve()
-    if CARPETA_SALIDAS not in archivo.parents or archivo.suffix != ".docx" or not archivo.is_file():
+    """
+    Descarga un DOCX generado (del disco o de Supabase, según ALMACEN).
+    Solo dentro de salidas/: nada más. Acepta la ruta relativa que guarda
+    el historial ("salidas/cv/...") o una absoluta de versiones anteriores.
+    """
+    archivo = almacen.resolver(ruta)
+    if CARPETA_SALIDAS not in archivo.parents or archivo.suffix != ".docx":
         raise HTTPException(404, "Archivo no encontrado.")
-    return FileResponse(archivo, filename=archivo.name)
+    try:
+        contenido = almacen.leer_bytes(archivo)
+    except FileNotFoundError:
+        raise HTTPException(404, "Archivo no encontrado.") from None
+    nombre = quote(archivo.name)
+    return Response(
+        contenido,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{nombre}"},
+    )
 
 
 # --------------------------------------------------------------

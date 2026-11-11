@@ -139,3 +139,27 @@ def test_sin_cv_en_supabase_el_mensaje_lo_explica(bd):
     from app.cv import cargador
     with pytest.raises(cargador.CVBaseNoEncontrado, match="subir_a_supabase"):
         cargador.cargar_cv_base()
+
+
+def test_word_en_supabase_se_descarga_con_ruta_relativa(bd):
+    from docx import Document
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    doc = Document()
+    doc.add_paragraph("Hola")
+    ruta = almacen.guardar_docx(doc, RAIZ / "salidas" / "cv" / "job_1" / "v1" / "CV_Ñ.docx")
+    relativa = almacen.para_mostrar(ruta)
+    assert relativa == "salidas/cv/job_1/v1/CV_Ñ.docx"
+
+    client = TestClient(app)
+    r = client.get("/api/archivos", params={"ruta": relativa})
+    assert r.status_code == 200
+    assert r.content[:2] == b"PK"  # un .docx es un zip
+    assert "CV_%C3%91.docx" in r.headers["content-disposition"]
+
+    # Nada fuera de salidas/, ni con trucos de ruta.
+    almacen.escribir_texto(RAIZ / "data" / "cv_base.yaml", "secreto")
+    for ruta_mala in ["data/cv_base.yaml", "salidas/../data/cv_base.yaml", "salidas/cv/no-existe.docx",
+                      "C:\\Users\\x\\salidas\\cv\\CV.docx"]:
+        assert client.get("/api/archivos", params={"ruta": ruta_mala}).status_code == 404

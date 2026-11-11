@@ -307,7 +307,4 @@ def generar_informe(
             _etiqueta_valor(doc, "Proyecto: ", item["proyecto"])
 
     carpeta = carpeta or CARPETA_INFORMES
-    carpeta.mkdir(parents=True, exist_ok=True)
-    ruta = carpeta / f"Brujula_{date.today().isoformat()}.docx"
-    doc.save(ruta)
-    return ruta
+    return almacen.guardar_docx(doc, carpeta / f"Brujula_{date.today().isoformat()}.docx")

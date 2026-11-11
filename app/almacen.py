@@ -46,6 +46,34 @@ def clave(ruta: Path) -> str:
         raise ValueError(f"{ruta} está fuera del proyecto: no se puede guardar en Supabase.") from None
 
 
+def para_mostrar(ruta: Path) -> str:
+    """
+    Cómo se anota una ruta en el historial: relativa al proyecto si está
+    dentro ("salidas/cv/..."), para que valga igual en tu PC (Windows) y
+    en Cloud Run (Linux), que comparten la base de datos.
+    """
+    try:
+        return clave(ruta)
+    except ValueError:
+        return str(ruta)
+
+
+def resolver(ruta: str) -> Path:
+    """Inversa de para_mostrar: una ruta relativa se interpreta desde la raíz."""
+    p = Path(ruta.replace("\\", "/")) if not Path(ruta).is_absolute() else Path(ruta)
+    return (p if p.is_absolute() else RAIZ / p).resolve()
+
+
+def guardar_docx(documento, ruta: Path) -> Path:
+    """Guarda un Document de python-docx donde toque (disco o Supabase)."""
+    import io
+
+    memoria = io.BytesIO()
+    documento.save(memoria)
+    escribir_bytes(ruta, memoria.getvalue())
+    return ruta
+
+
 # ---------------------------------------------------------------
 # Supabase: una fila por "archivo"
 # ---------------------------------------------------------------

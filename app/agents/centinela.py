@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Optional
 from xml.sax.saxutils import escape
 
-from app import consultas
+from app import almacen, consultas
 from app.cv.cargador import RAIZ
 
 CARPETA_RESUMENES = RAIZ / "salidas" / "resumenes"
@@ -80,10 +80,8 @@ def resumen_markdown(resumen: dict, sabueso: Optional[dict] = None) -> str:
 
 
 def guardar_resumen(texto: str, fecha: str, carpeta: Optional[Path] = None) -> Path:
-    carpeta = carpeta or CARPETA_RESUMENES
-    carpeta.mkdir(parents=True, exist_ok=True)
-    ruta = carpeta / f"resumen_{fecha}.md"
-    ruta.write_text(texto, encoding="utf-8")
+    ruta = (carpeta or CARPETA_RESUMENES) / f"resumen_{fecha}.md"
+    almacen.escribir_texto(ruta, texto)
     return ruta
 
 

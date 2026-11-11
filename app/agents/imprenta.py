@@ -28,6 +28,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Emu, Pt, RGBColor
 
+from app import almacen
 from app.agents.estado import CVState
 from app.cv import historial
 from app.cv.cambios import textos_con_decisiones
@@ -230,10 +231,7 @@ def generar_cv(cv: CVBase, state: CVState, carpeta: Path) -> Path:
         _titulo_seccion(doc, "Competencias")
         doc.add_paragraph(", ".join(cv.competencias))
 
-    carpeta.mkdir(parents=True, exist_ok=True)
-    ruta = carpeta / _nombre_archivo("CV", state["oferta"])
-    doc.save(ruta)
-    return ruta
+    return almacen.guardar_docx(doc, carpeta / _nombre_archivo("CV", state["oferta"]))
 
 
 # --------------------------------------------------------------
@@ -358,10 +356,7 @@ def generar_brechas(cv: CVBase, state: CVState, carpeta: Path) -> Path:
         for aviso in avisos:
             _vineta(doc, aviso)
 
-    carpeta.mkdir(parents=True, exist_ok=True)
-    ruta = carpeta / _nombre_archivo("Brechas", oferta)
-    doc.save(ruta)
-    return ruta
+    return almacen.guardar_docx(doc, carpeta / _nombre_archivo("Brechas", oferta))
 
 
 def imprimir(state: CVState) -> CVState:
@@ -377,8 +372,8 @@ def imprimir(state: CVState) -> CVState:
         / f"v{version}_{datetime.now():%Y-%m-%d_%H%M}"
     )
     cv = cargar_cv_base()
-    ruta_cv = str(generar_cv(cv, state, carpeta))
-    ruta_brechas = str(generar_brechas(cv, state, carpeta))
+    ruta_cv = almacen.para_mostrar(generar_cv(cv, state, carpeta))
+    ruta_brechas = almacen.para_mostrar(generar_brechas(cv, state, carpeta))
     revision = guardar_revision(state, carpeta)
     historial.registrar(
         oferta["job_id"], oferta["puesto"], oferta.get("empresa"), ruta_cv, ruta_brechas,
@@ -405,9 +400,9 @@ def guardar_revision(state: CVState, carpeta: Path) -> Optional[dict]:
         "cambios": [{**c, "aceptado": c["id"] not in rechazados} for c in cambios],
     }
     ruta = carpeta / "cambios.json"
-    ruta.write_text(json.dumps(datos, ensure_ascii=False, indent=1), encoding="utf-8")
+    almacen.escribir_texto(ruta, json.dumps(datos, ensure_ascii=False, indent=1))
     return {
         "cambios": len(cambios),
         "aceptados": len(cambios) - len(rechazados & {c["id"] for c in cambios}),
-        "ruta": str(ruta),
+        "ruta": almacen.para_mostrar(ruta),
     }
