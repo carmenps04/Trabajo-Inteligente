@@ -36,3 +36,11 @@ def test_prompt_de_lupa_no_cuenta_lo_que_la_empresa_ofrece_como_requisito():
     # se extraía como requisito deseable de IA.
     assert "lo que la empresa ofrece enseñar" in PROMPT_TEMPLATE
     assert "la descripción de la empresa" in PROMPT_TEMPLATE
+
+
+def test_prompt_de_lupa_trata_alternativas_conceptos_y_nombres():
+    # Caso real: "Power BI, Tableau and/or Domo" daba tres obligatorias,
+    # "business intelligence" salía como tecnología y "XLS" no era Excel.
+    assert "márcalas TODAS como\n  requirement_type=preferred" in PROMPT_TEMPLATE
+    assert '"business intelligence"' in PROMPT_TEMPLATE
+    assert '-> "Excel"' in PROMPT_TEMPLATE

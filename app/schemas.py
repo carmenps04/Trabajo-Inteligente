@@ -70,7 +70,7 @@ class ExtractedTechnology(BaseModel):
     Una tecnología detectada en la oferta, con su contexto replica 1 a 1 los campos de la tabla job_technology, 
     para que guardar esto en la BD después sea directo, sin transformación.
     """
-    name: str = Field(description="Nombre de la tecnología tal como aparece en el texto")
+    name: str = Field(description="Nombre común de la herramienta (ej. 'Excel' si el texto dice 'XLS')")
     category: Literal[
         "Programming", "Database", "Cloud", "BI_Tool", "Automation_Tool",
         "Framework", "Methodology", "Soft_Skill", "Other",

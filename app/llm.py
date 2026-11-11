@@ -300,6 +300,18 @@ solicitada de forma ESTRICTA:
   * la descripción de la empresa, su sector o sus productos
     ("empresa líder en software cloud").
   Si la oferta no pide ninguna tecnología concreta, technologies=[].
+- Herramientas ALTERNATIVAS: si la oferta pide una entre varias
+  ("Power BI, Tableau and/or Domo", "Python o R", "Tableau u otra
+  herramienta similar"), extrae cada una pero márcalas TODAS como
+  requirement_type=preferred, aunque la frase diga "requerido": el
+  candidato no necesita todas.
+- Solo herramientas, lenguajes, plataformas o metodologías con nombre
+  propio. NO extraigas disciplinas ni conceptos generales como
+  tecnología ("business intelligence", "analítica de datos", "reporting",
+  "herramientas de BI", "data visualization").
+- Usa el nombre común de la herramienta: "XLS", "XLSX" u "hojas de
+  cálculo de Excel" -> "Excel"; "MS Office" -> "Microsoft Office";
+  "PBI" -> "Power BI".
 - Si el texto indica que la oferta ya no está disponible, está cerrada
   o cubierta, responde is_offer_available=false y technologies=[].
 
