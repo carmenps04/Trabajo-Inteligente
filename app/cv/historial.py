@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+from app import almacen
 from app.cv.cargador import RAIZ
 
 RUTA_HISTORIAL = RAIZ / "data" / "historial_cv.json"
@@ -23,16 +24,14 @@ def _ruta(ruta: Optional[Path]) -> Path:
 
 
 def _cargar(ruta: Optional[Path] = None) -> list[dict]:
-    ruta = _ruta(ruta)
-    if not ruta.exists():
+    try:
+        return json.loads(almacen.leer_texto(_ruta(ruta)))
+    except FileNotFoundError:
         return []
-    return json.loads(ruta.read_text(encoding="utf-8"))
 
 
 def _guardar(entradas: list[dict], ruta: Optional[Path] = None) -> None:
-    ruta = _ruta(ruta)
-    ruta.parent.mkdir(parents=True, exist_ok=True)
-    ruta.write_text(json.dumps(entradas, ensure_ascii=False, indent=1), encoding="utf-8")
+    almacen.escribir_texto(_ruta(ruta), json.dumps(entradas, ensure_ascii=False, indent=1))
 
 
 def registrar(

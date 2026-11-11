@@ -17,6 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+from app import almacen
 from app.cv.cargador import RAIZ
 
 CARPETA_PENDIENTES = RAIZ / "data" / "pendientes"
@@ -30,14 +31,13 @@ def _carpeta(carpeta: Optional[Path]) -> Path:
 
 def guardar(url: str, texto: str, carpeta: Optional[Path] = None) -> str:
     carpeta = _carpeta(carpeta)
-    carpeta.mkdir(parents=True, exist_ok=True)
     id_ = uuid.uuid4().hex
     datos = {
         "url": (url or "").strip()[:2000],
         "texto": (texto or "").strip()[:MAX_CARACTERES],
         "recibido": datetime.now().isoformat(timespec="seconds"),
     }
-    (carpeta / f"{id_}.json").write_text(json.dumps(datos, ensure_ascii=False), encoding="utf-8")
+    almacen.escribir_texto(carpeta / f"{id_}.json", json.dumps(datos, ensure_ascii=False))
     return id_
 
 
@@ -46,8 +46,9 @@ def tomar(id_: str, carpeta: Optional[Path] = None) -> Optional[dict]:
     if not _ID_VALIDO.match(id_ or ""):
         return None
     ruta = _carpeta(carpeta) / f"{id_}.json"
-    if not ruta.exists():
+    try:
+        datos = json.loads(almacen.leer_texto(ruta))
+    except FileNotFoundError:
         return None
-    datos = json.loads(ruta.read_text(encoding="utf-8"))
-    ruta.unlink()
+    almacen.borrar(ruta)
     return datos

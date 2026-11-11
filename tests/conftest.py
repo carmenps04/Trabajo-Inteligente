@@ -31,3 +31,5 @@ def sin_login(monkeypatch):
     """Los tests no dependen de que tu .env tenga APP_PASSWORD (ni de correr en Cloud Run)."""
     monkeypatch.delenv("APP_PASSWORD", raising=False)
     monkeypatch.delenv("K_SERVICE", raising=False)
+    # Y nunca tocan tu Supabase: los datos van a archivos (rutas de tmp_path).
+    monkeypatch.delenv("ALMACEN", raising=False)

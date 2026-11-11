@@ -9,6 +9,7 @@ from typing import Optional
 
 import yaml
 
+from app import almacen
 from app.cv.modelo import CVBase
 
 RAIZ = Path(__file__).resolve().parents[2]
@@ -21,14 +22,17 @@ class CVBaseNoEncontrado(Exception):
 
 def cargar_cv_base(ruta: Optional[Path] = None) -> CVBase:
     ruta = ruta or RUTA_CV_BASE
-    if not ruta.exists():
-        raise CVBaseNoEncontrado(
-            f"No existe {ruta}. Copia data/cv_base.example.yaml como "
-            "data/cv_base.yaml y complétalo con tu CV."
-        )
-    with open(ruta, encoding="utf-8") as f:
-        datos = yaml.safe_load(f)
-    return CVBase.model_validate(datos)
+    try:
+        texto = almacen.leer_texto(ruta)
+    except FileNotFoundError:
+        if almacen.en_supabase():
+            mensaje = ("No hay CV base en Supabase. Súbelo desde tu PC con "
+                       "`python -m scripts.subir_a_supabase`.")
+        else:
+            mensaje = (f"No existe {ruta}. Copia data/cv_base.example.yaml como "
+                       "data/cv_base.yaml y complétalo con tu CV.")
+        raise CVBaseNoEncontrado(mensaje) from None
+    return CVBase.model_validate(yaml.safe_load(texto))
 
 
 ENCABEZADO = """\
@@ -50,13 +54,11 @@ def guardar_cv_base(cv: CVBase, ruta: Optional[Path] = None) -> None:
     (una sola, la última), por si un cambio sale mal.
     """
     ruta = ruta or RUTA_CV_BASE
-    if ruta.exists():
+    if almacen.existe(ruta):
         respaldo = ruta.with_name(ruta.stem + ".respaldo" + ruta.suffix)
-        respaldo.write_bytes(ruta.read_bytes())
+        almacen.escribir_bytes(respaldo, almacen.leer_bytes(ruta))
     datos = cv.model_dump(exclude_none=True)
     for clave in [c for c, v in datos.items() if v == []]:
         del datos[clave]  # secciones vacías: fuera, el YAML queda más limpio
     texto = yaml.safe_dump(datos, allow_unicode=True, sort_keys=False, width=1000)
-    temporal = ruta.with_name(ruta.stem + ".tmp" + ruta.suffix)
-    temporal.write_text(ENCABEZADO + texto, encoding="utf-8")
-    temporal.replace(ruta)  # todo o nada: no queda un archivo a medias
+    almacen.escribir_texto(ruta, ENCABEZADO + texto)  # todo o nada: no queda a medias

@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import Literal, Optional
 
 import yaml
+
+from app import almacen
 from pydantic import BaseModel
 
 from app.cv.cargador import RAIZ
@@ -35,10 +37,10 @@ def _clave(tecnologia: str) -> str:
 def cargar_respuestas(ruta: Optional[Path] = None) -> dict[str, Respuesta]:
     """{nombre en minúsculas: Respuesta}. Vacío si aún no hay archivo."""
     ruta = ruta or RUTA_RESPUESTAS
-    if not ruta.exists():
+    try:
+        datos = yaml.safe_load(almacen.leer_texto(ruta)) or []
+    except FileNotFoundError:
         return {}
-    with open(ruta, encoding="utf-8") as f:
-        datos = yaml.safe_load(f) or []
     respuestas = [Respuesta.model_validate(d) for d in datos]
     return {_clave(r.tecnologia): r for r in respuestas}
 
@@ -50,9 +52,7 @@ def guardar_respuestas(nuevas: list[Respuesta], ruta: Optional[Path] = None) -> 
     for r in nuevas:
         todas[_clave(r.tecnologia)] = r
 
-    ruta.parent.mkdir(parents=True, exist_ok=True)
-    with open(ruta, "w", encoding="utf-8") as f:
-        yaml.safe_dump(
-            [r.model_dump(exclude_none=True) for r in todas.values()],
-            f, allow_unicode=True, sort_keys=False,
-        )
+    almacen.escribir_texto(ruta, yaml.safe_dump(
+        [r.model_dump(exclude_none=True) for r in todas.values()],
+        allow_unicode=True, sort_keys=False,
+    ))

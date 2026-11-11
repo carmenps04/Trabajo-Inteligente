@@ -32,6 +32,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from app import almacen
 from app.cv.cargador import RAIZ
 from app.llm import generar_estructurado
 from app.scoring import ORDEN_NIVEL
@@ -236,20 +237,19 @@ def generar_plan(top: list[Prioridad], skills_base: list[str]) -> tuple[Optional
 
 def guardar_plan(plan: PlanEstudio, top: list[Prioridad], ruta: Optional[Path] = None) -> None:
     ruta = ruta or RUTA_PLAN
-    ruta.parent.mkdir(parents=True, exist_ok=True)
     datos = {
         "generado": datetime.now().isoformat(timespec="minutes"),
         "prioridades": [asdict(p) for p in top],
         "plan": plan.model_dump(),
     }
-    ruta.write_text(json.dumps(datos, ensure_ascii=False, indent=1), encoding="utf-8")
+    almacen.escribir_texto(ruta, json.dumps(datos, ensure_ascii=False, indent=1))
 
 
 def cargar_plan(ruta: Optional[Path] = None) -> Optional[dict]:
-    ruta = ruta or RUTA_PLAN
-    if not ruta.exists():
+    try:
+        return json.loads(almacen.leer_texto(ruta or RUTA_PLAN))
+    except FileNotFoundError:
         return None
-    return json.loads(ruta.read_text(encoding="utf-8"))
 
 
 # --------------------------------------------------------------

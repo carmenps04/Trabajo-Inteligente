@@ -18,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterator, Optional
 
+from app import almacen
 from app.cv.cargador import RAIZ
 
 RUTA_ACTIVIDAD = RAIZ / "data" / "actividad.jsonl"
@@ -219,21 +220,24 @@ def transmitir(grafo, entrada, config: Optional[dict] = None, flujo: str = "") -
 def registrar(agente: str, resumen: str, estado: str = "ok", flujo: str = "", ruta: Optional[Path] = None) -> None:
     ruta = ruta or RUTA_ACTIVIDAD
     try:
-        ruta.parent.mkdir(parents=True, exist_ok=True)
         linea = json.dumps({
             "fecha": datetime.now().isoformat(timespec="seconds"),
             "agente": agente, "estado": estado, "resumen": resumen, "flujo": flujo,
         }, ensure_ascii=False)
-        lineas = ruta.read_text(encoding="utf-8").splitlines() if ruta.exists() else []
+        try:
+            lineas = almacen.leer_texto(ruta).splitlines()
+        except FileNotFoundError:
+            lineas = []
         lineas = (lineas + [linea])[-MAX_REGISTROS:]
-        ruta.write_text("\n".join(lineas) + "\n", encoding="utf-8")
-    except OSError:
-        pass  # el registro es informativo: nunca debe romper un flujo
+        almacen.escribir_texto(ruta, "\n".join(lineas) + "\n")
+    except Exception:
+        pass  # el registro es informativo: nunca debe romper un flujo (ni si falla Supabase)
 
 
 def actividad_reciente(limite: int = 60, ruta: Optional[Path] = None) -> list[dict]:
-    ruta = ruta or RUTA_ACTIVIDAD
-    if not ruta.exists():
+    try:
+        texto = almacen.leer_texto(ruta or RUTA_ACTIVIDAD)
+    except FileNotFoundError:
         return []
-    filas = [json.loads(l) for l in ruta.read_text(encoding="utf-8").splitlines() if l.strip()]
+    filas = [json.loads(l) for l in texto.splitlines() if l.strip()]
     return list(reversed(filas))[:limite]
