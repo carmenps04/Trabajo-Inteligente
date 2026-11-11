@@ -8,7 +8,10 @@ Servidor único de Job-Intelligence (http://localhost:8000):
     POST /recibir       lo envía el marcador "Enviar a Job-Intelligence"
                         desde el navegador; deja la oferta pendiente y
                         abre "Analizar oferta" con el texto prellenado.
+    /login, /logout     login con una sola contraseña (app/acceso.py)
     /                   el frontend React ya compilado (web/dist)
+
+Con APP_PASSWORD en el entorno, todo exige sesión salvo /login.
 """
 
 import os
@@ -20,14 +23,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from app import pendientes
+from app import acceso, pendientes
 from app.api import router as api_router
 from app.cv.cargador import RAIZ
 from app.schemas import AnalyzeJobRequest, AnalyzeJobResponse
 from app.services import analizar_oferta
 
+# Falla al arrancar si la app quedaría publicada sin contraseña.
+acceso.verificar_config()
+
 app = FastAPI(title="Job-Intelligence API", version="0.5.0")
+app.include_router(acceso.router)
 app.include_router(api_router)
+app.middleware("http")(acceso.exigir_sesion)
 
 # En desarrollo el frontend corre aparte con Vite (puerto 5173).
 app.add_middleware(

@@ -176,11 +176,19 @@ export type ResultadoSabueso = {
 
 export class ErrorApi extends Error {}
 
+/** Sesión caducada (401): vuelve al login y, al entrar, a la página donde estabas. */
+function irAlLogin(): never {
+  const aqui = window.location.pathname + window.location.search;
+  window.location.href = `/login?siguiente=${encodeURIComponent(aqui)}`;
+  throw new ErrorApi("Tu sesión ha caducado. Vuelve a entrar.");
+}
+
 async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
   const r = await fetch(`/api${ruta}`, {
     headers: { "Content-Type": "application/json" },
     ...opciones,
   });
+  if (r.status === 401) irAlLogin();
   if (!r.ok) {
     let mensaje = `Error ${r.status}`;
     try {
@@ -214,6 +222,7 @@ export const api = {
     post<FlujoCV>(`/cv/flujos/${threadId}/responder`, respuestas),
   perfil: () => pedir<Perfil>("/perfil"),
   cvBase: () => pedir<CVBase>("/cv/base"),
+  sesion: () => pedir<{ con_login: boolean; activa: boolean }>("/sesion"),
   guardarCvBase: (cv: CVBase) =>
     pedir<{ ok: boolean; habilidades: number }>("/cv/base", { method: "PUT", body: JSON.stringify(cv) }),
   guardarHabilidad: (h: { nombre: string; categoria: string; nivel: string; meses_experiencia?: number; evidencia: string }) =>
@@ -241,6 +250,7 @@ export async function transmitir<T>(ruta: string, cuerpo: unknown, alEvento: (ev
     headers: { "Content-Type": "application/json" },
     body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
   });
+  if (r.status === 401) irAlLogin();
   if (!r.ok || !r.body) {
     let mensaje = `Error ${r.status}`;
     try {

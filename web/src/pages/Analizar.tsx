@@ -17,12 +17,13 @@ import {
 // peticiones a localhost desde el portal: LinkedIn (y Brave) bloqueaban
 // eso en silencio. La copia es síncrona (execCommand) para que la pestaña
 // se abra dentro del mismo clic y el navegador no la trate como popup.
+// La dirección de la app es la de esta misma página (localhost en tu PC, la de Cloud Run publicada).
 const MARCADOR =
   "javascript:(()=>{const t=(String(getSelection())||document.body.innerText).slice(0,60000);" +
   "const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';" +
   "document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}a.remove();" +
   "if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>{});" +
-  "window.open('http://localhost:8000/analizar?copiada=1&url='+encodeURIComponent(location.href),'_blank')})()";
+  `window.open('${window.location.origin}/analizar?copiada=1&url='+encodeURIComponent(location.href),'_blank')})()`;
 
 const MENSAJES: Record<ResultadoAnalisis["registration_status"], { tono: "ok" | "info" | "warn" | "bad"; texto: string }> = {
   saved: { tono: "ok", texto: "Oferta registrada." },

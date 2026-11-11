@@ -8,6 +8,7 @@ import {
   Inbox,
   LayoutDashboard,
   ListChecks,
+  LogOut,
   Menu,
   Moon,
   Sun,
@@ -15,7 +16,9 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { api } from "../api";
 import { NavLink, Outlet, useLocation } from "react-router";
 import { cx } from "./ui";
 
@@ -107,6 +110,7 @@ export default function Layout() {
   const [oscuro, setOscuro] = useTema();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const { pathname } = useLocation();
+  const { data: sesion } = useQuery({ queryKey: ["sesion"], queryFn: api.sesion, staleTime: Infinity });
 
   // Con llaves: un efecto solo puede devolver una función de limpieza (o nada).
   useEffect(() => {
@@ -124,6 +128,16 @@ export default function Layout() {
     </button>
   );
 
+  // Formulario normal (no fetch): el servidor borra la cookie y lleva al login.
+  const botonSalir = sesion?.con_login ? (
+    <form method="post" action="/logout">
+      <button type="submit"
+              className="flex w-full items-center gap-2 rounded px-2.5 py-1.5 text-sm text-sidebar-ink transition hover:bg-sidebar-2/60 hover:text-ink">
+        <LogOut className="size-4" /> Cerrar sesión
+      </button>
+    </form>
+  ) : null;
+
   return (
     <div className="min-h-screen lg:pl-60">
       {/* Barra lateral (escritorio) */}
@@ -132,6 +146,7 @@ export default function Layout() {
         <div className="mt-6 flex-1 overflow-y-auto"><Navegacion /></div>
         <div className="border-t border-line pt-3">
           {botonTema}
+          {botonSalir}
           <p className="mt-2 px-2.5 text-xs leading-relaxed text-ink-3">Datos en tu PC y en tu Supabase · Gemini, plan gratuito</p>
         </div>
       </aside>
@@ -153,6 +168,7 @@ export default function Layout() {
             </div>
             <div className="mt-8 flex-1 overflow-y-auto"><Navegacion alNavegar={() => setMenuAbierto(false)} /></div>
             {botonTema}
+            {botonSalir}
           </div>
         </div>
       )}

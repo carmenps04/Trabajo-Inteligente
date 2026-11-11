@@ -24,3 +24,10 @@ def sin_llm_real(monkeypatch):
     # Las cadenas de modelos no dependen de tu .env real.
     for variable in ("LLM_RESPALDO", "GROQ_API_KEY", "GROQ_MODELO", "OLLAMA_MODELO", "GEMINI_MODELO"):
         monkeypatch.delenv(variable, raising=False)
+
+
+@pytest.fixture(autouse=True)
+def sin_login(monkeypatch):
+    """Los tests no dependen de que tu .env tenga APP_PASSWORD (ni de correr en Cloud Run)."""
+    monkeypatch.delenv("APP_PASSWORD", raising=False)
+    monkeypatch.delenv("K_SERVICE", raising=False)
