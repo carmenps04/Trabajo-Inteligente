@@ -1,0 +1,20 @@
+# Lo que gcloud NO sube al construir en Google Cloud (igual que .dockerignore).
+# Nunca dentro de la imagen: claves, datos privados y documentos generados.
+.env
+.env.*
+!.env.example
+data/
+salidas/
+# Ni lo que se reconstruye dentro o no hace falta para ejecutar.
+.git/
+.claude/
+venv/
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+web/node_modules/
+web/dist/
+web/tsconfig.tsbuildinfo
+tests/
+scripts/
+sql/
